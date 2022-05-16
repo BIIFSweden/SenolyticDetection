@@ -1,7 +1,8 @@
 matplotlib
 numpy
-os-sys
 pandas
 scikit-image
 nd2reader
 tk
+slicerator
+openpyxl

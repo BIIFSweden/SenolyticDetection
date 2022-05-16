@@ -12,6 +12,7 @@ setup(
     url='https://github.com/BIIFSweden/Federico-Pietrocola2022-3',
     packages=find_packages(','),
 
-    install_requires=[  'matplotlib','numpy','os-sys','pandas',
-                        'scikit-image','nd2reader','tk',]
+    install_requires=[  'matplotlib','numpy','pandas',
+                        'scikit-image','nd2reader','tk','slicerator','openpyxl'
+                        ]
 )
