@@ -1,8 +1,7 @@
 matplotlib
 numpy
-os
+os-sys
 pandas
-time
 scikit-image
 nd2reader
 tk
