@@ -13,28 +13,22 @@ The script saves excel files with the scenescent and healthy counts of nuclei as
 
 ## Installation
 
-1. Create a conda virtual environment (example using virutal environment named chiara3). This will be used to run the program in.
+1. Create a conda virtual environment (example using virutal environment named chiara3). This will be used to run the program in. Afterwards activate the environment.
 ```bash
 conda create -n chiara3 python=3.9
-```
-2. Activate the virtual environment:
-```bash
 conda activate chiara3
 ```
-3. Open command prompt (windows) or terminal (mac) and change to a directory where you wish to store the program:
+
+2. Open command prompt (windows) or terminal (mac) and change to a directory where you wish to store the program:
 
 ```bash
-cd directory
+cd storage_directory
 ```
 
-4. Download the github repository into this directory and change into the Federico-Pietrocola2022-3 directory:
+3. Download the github repository into this directory, change into the Federico-Pietrocola2022-3 directory and setup the environment:
 ```bash
 git clone https://github.com/BIIFSweden/Federico-Pietrocola2022-3.git
 cd Federico-Pietrocola2022-3
-```
-
-6. Install the program using the setup.py file then wait for all the dependecies to install.
-```bash
 python setup.py install
 ```
 
