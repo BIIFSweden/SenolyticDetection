@@ -11,7 +11,52 @@ To overcome the autofluorescence of the senescent nuclei, nuclei that appear in 
 The script saves excel files with the scenescent and healthy counts of nuclei as well as .tiff images showing the segmentation results.
 
 
+## Installation
+
+1. Create a conda virtual environment (example using virutal environment named chiara3). This will be used to run the program in.
+```bash
+conda create -n chiara3 python=3.9
+```
+2. Activate the virtual environment:
+```bash
+conda activate chiara3
+```
+3. Open command prompt (windows) or terminal (mac) and change to a directory where you wish to store the program:
+
+```bash
+cd directory
+```
+
+4. Download the github repository into this directory and change into the Federico-Pietrocola2022-3 directory:
+```bash
+git clone https://github.com/BIIFSweden/Federico-Pietrocola2022-3.git
+cd Federico-Pietrocola2022-3
+```
+
+6. Install the program using the setup.py file then wait for all the dependecies to install.
+```bash
+python setup.py install
+```
+
+## Running the program
+
+1. Change to the src directory inside Federico-Pietrocola2022-3 
+```bash
+cd src
+```
+2. Run the program. 
+```bash
+python main.py
+```
+3. This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and press Run Analysis.
+
+<img width="477" alt="Screen Shot 2022-05-16 at 5 41 03 PM" src="https://user-images.githubusercontent.com/43760657/168631403-fa4f1d85-8062-4be4-a77a-670f177e48a7.png">
+
+4. Monitor the command prompt for updates on the program.
+
 ## Results
+
+After the program has finished running, .tiff images with the segmentation results as well as .xlsx files will be saved in the directories with the results from the analysis.
 
 ![WellD03_Channel Kinetix Single band tdTomato, Kinetix Single band senolysis  EGFP1, Kinetix Single  Hoechst_Seq0009](https://user-images.githubusercontent.com/43760657/168570960-6872e969-c0b6-4ec9-988a-df49df8b9527.jpg)
 
