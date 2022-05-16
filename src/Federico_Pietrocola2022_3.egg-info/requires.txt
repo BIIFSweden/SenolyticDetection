@@ -1,0 +1,8 @@
+matplotlib
+numpy
+os
+pandas
+time
+scikit-image
+nd2reader
+tkinter
