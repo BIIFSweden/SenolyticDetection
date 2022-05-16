@@ -5,4 +5,4 @@ pandas
 time
 scikit-image
 nd2reader
-tkinter
+tk

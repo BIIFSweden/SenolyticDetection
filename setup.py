@@ -19,5 +19,5 @@ setup(
                         'time',
                         'scikit-image',
                         'nd2reader',
-                        'tkinter',]
+                        'tk',]
 )
