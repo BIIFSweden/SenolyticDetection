@@ -35,6 +35,7 @@ class GUI(tk.Tk):
     def quit_gui(self):
         self.after(100,self.destroy())
 
+
 if __name__ == '__main__':
     print('Select Directory in GUI and press Run Analysis')
     gui = GUI()
@@ -42,10 +43,3 @@ if __name__ == '__main__':
     print('Directory chosen.')
     main_analysis(gui.directory)
     print('Analysis Finished.')
-
-
-
-
-
-
-

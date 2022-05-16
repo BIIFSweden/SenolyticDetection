@@ -10,8 +10,6 @@ from time import time
 import pandas as pd
 from time import time, localtime, strftime
 
-
-
 def find_images(folder_path):
     """ Finds the paths of all .nd2 images within specified path. Normalizes
     image paths to work on any OS.
@@ -53,6 +51,7 @@ def nd2_import(image_path):
         damaged,healthy,all = nd2_object[0],nd2_object[1],nd2_object[2]
 
     return  damaged,healthy,all
+
 
 def threshold_with_otsu(img):
     """ Segmented 2D image using Otsu Thresholding
@@ -110,13 +109,16 @@ def remove_objects_size(img,low_size = 100000,high_size = 800000,selem_size = 8)
     out = removal_mask*img
     return out
 
+
 def contained_within(centroid,red_channel):
     x = int(centroid[0])
     y = int(centroid[1])
     
     if red_channel[x,y] == 1:
         return True
-    return False
+    else:
+        return False
+
 
 def autofluoresence_removal(red_channel_thresholded,green_channel_thresholded):
     """ The damaged senescent cells in the red channel have autofluorescence in
@@ -155,6 +157,7 @@ def autofluoresence_removal(red_channel_thresholded,green_channel_thresholded):
     healthy_only = green_channel_thresholded*mask
     return healthy_only
 
+
 def count_nuclei(img):
     """ Counts nuclei objects in binary image.
 
@@ -171,6 +174,7 @@ def count_nuclei(img):
     regions = regionprops(labelled)
 
     return len(regions)
+
 
 def mask_3D(RGB,mask):
     """Applies 2D Binary mask to RGB Image
@@ -189,6 +193,7 @@ def mask_3D(RGB,mask):
     for i in range(RGB.shape[2]):
         masked[:,:,i] = mask*RGB[:,:,i]
     return masked
+
 
 def create_figure(red,red_thresholded,green,healthy_nuclei,blue,img_path,program_start_time):
     """Saves .tiff file of nuclei segmentation results
@@ -247,6 +252,7 @@ def create_figure(red,red_thresholded,green,healthy_nuclei,blue,img_path,program
     plt.close() 
 
     return
+
 
 def saveExcel(img_path,healthy_count,senescent_count,ratio,program_start_time):
 
@@ -344,4 +350,3 @@ def main_analysis(directory):
         print('     Processing time:',round(end - start,1),'seconds')
 
     return
-
