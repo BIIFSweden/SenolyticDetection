@@ -11,6 +11,10 @@ To overcome the autofluorescence of the senescent nuclei, nuclei that appear in 
 The script saves excel files with the scenescent and healthy counts of nuclei as well as .tiff images showing the segmentation results.
 
 
+## Results
+
+![WellD03_Channel Kinetix Single band tdTomato, Kinetix Single band senolysis  EGFP1, Kinetix Single  Hoechst_Seq0009](https://user-images.githubusercontent.com/43760657/168570960-6872e969-c0b6-4ec9-988a-df49df8b9527.jpg)
+
 
 
 
