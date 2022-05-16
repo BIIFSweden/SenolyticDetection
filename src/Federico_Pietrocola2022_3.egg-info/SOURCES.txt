@@ -1,9 +1,0 @@
-README.md
-setup.py
-src/functions.py
-src/main.py
-src/Federico_Pietrocola2022_3.egg-info/PKG-INFO
-src/Federico_Pietrocola2022_3.egg-info/SOURCES.txt
-src/Federico_Pietrocola2022_3.egg-info/dependency_links.txt
-src/Federico_Pietrocola2022_3.egg-info/requires.txt
-src/Federico_Pietrocola2022_3.egg-info/top_level.txt
