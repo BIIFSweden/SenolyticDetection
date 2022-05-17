@@ -50,6 +50,6 @@ python main.py
 
 ## Results
 
-After the program has finished running, .tiff images with the segmentation results as well as .xlsx files will be saved in the directories with the results from the analysis.
+After the program has finished running, .tiff images with the segmentation results as well as .xlsx files will be saved in the corresponding directories containing the analyzed images.
 
 ![WellD03_Channel Kinetix Single band tdTomato, Kinetix Single band senolysis  EGFP1, Kinetix Single  Hoechst_Seq0009](https://user-images.githubusercontent.com/43760657/168570960-6872e969-c0b6-4ec9-988a-df49df8b9527.jpg)
