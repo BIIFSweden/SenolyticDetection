@@ -13,10 +13,10 @@ The script saves excel files with counts of the scenescent and healthy nuclei. I
 
 ## Installation
 
-1. Create a conda virtual environment (example using virutal environment named chiara3). This will be used to run the program in. Afterwards activate the environment.
+1. Create a conda virtual environment (example using virutal environment named senescent). This will be used to run the program in. Afterwards activate the environment.
 ```bash
-conda create -n chiara3 python=3.9
-conda activate chiara3
+conda create -n senescent python=3.9
+conda activate senescent
 ```
 
 2. Open command prompt (windows) or terminal (mac) and change to a directory where you wish to store the program:
