@@ -69,6 +69,12 @@ def threshold_with_otsu(img):
     thresh = threshold_otsu(img)
     thresholded = img > thresh
 
+    #Zero out thresholding if over 50,000 nuclei detected
+    #Done as if no nuclei present, otsu will background noise
+    labelled = label(thresholded)
+    if np.amax(labelled) > 50000:
+        thresholded = np.zeros(thresholded.shape)
+
     return thresholded
 
 
@@ -159,8 +165,9 @@ def autofluoresence_removal(red_channel_thresholded, green_channel_thresholded):
     return healthy_only
 
 
-def count_nuclei(img):
-    """Counts nuclei objects in binary image.
+def analyze_nuclei(img):
+    """Labels nuclei objects in binary image and returns counts, mean size
+    and std.
 
     Parameters
     ----------
@@ -172,28 +179,19 @@ def count_nuclei(img):
 
     """
     labelled = label(img)
-    regions = regionprops(labelled)
+    count = np.amax(labelled)
 
-    return len(regions)
+    region = regionprops(labelled)
 
+    areas = []
+    for i in range(len(region)):
+        areas.append(region[i].area)
 
-# def mask_3D(RGB, mask):
-#     """Applies 2D Binary mask to RGB Image
+    mean_size = np.mean(areas)
+    std_size = np.std(areas)   
 
-#     Parameters
-#     ----------
-#     RGB : 3D array, any type
-#     mask: Binary/Boolean,
-#           2D mask for segmenting RGB image
+    return count,mean_size,std_size
 
-#     Returns
-#     ------
-#     masked: segmented RGB image
-#     """
-#     masked = np.zeros(RGB.shape)
-#     for i in range(RGB.shape[2]):
-#         masked[:, :, i] = mask * RGB[:, :, i]
-#     return masked
 
 
 def create_figure(
@@ -233,13 +231,10 @@ def create_figure(
     plt.title("All nuclei")
 
     plt.subplot(1, 3, 2)
-    #masked = mask_3D(RGB, red_thresholded)
     plt.imshow(red_thresholded)
     plt.title("Senescence")
 
     plt.subplot(1, 3, 3)
-    #masked = mask_3D(RGB, (healthy_nuclei > 0))
-
     plt.imshow(quiescent_nuclei > 0)
     plt.title("Quiescence")
 
@@ -258,7 +253,7 @@ def create_figure(
     return
 
 
-def saveExcel(img_path, quiescent_count, senescent_count, ratio, program_start_time):
+def saveExcel(img_path, quiescent_count,quiescent_size_mean,quiescent_size_std, senescent_count,senescent_size_mean,senescent_size_std, ratio, program_start_time):
 
     """Saves nuclei counts and ratio between Quiescent and Senescent nucleis
 
@@ -289,13 +284,17 @@ def saveExcel(img_path, quiescent_count, senescent_count, ratio, program_start_t
 
     # Create Dataframe for current image
     storage_df = pd.DataFrame(
-        [img_name, quiescent_count, senescent_count, ratio]
+        [img_name, quiescent_count, senescent_count, ratio, quiescent_size_mean,quiescent_size_std,senescent_size_mean,senescent_size_std]
     ).transpose()
     storage_df.columns = [
         "Image",
         "quiescence count",
         "senescence count",
         "quiescence / senescence ratio",
+        'quiescence mean area (pixels^2)',
+        'quiescence std area (pixels^2)',
+        'senescence mean area (pixels^2)',
+        'senescence std area (pixels^2)',
     ]
 
     if os.path.exists(excel_path):
@@ -355,13 +354,16 @@ def main_analysis(directory):
             program_start_time,
         )
 
-        # Count number of nuclei
-        quiescent_count = count_nuclei(quiescent_nuclei)
-        senescent_count = count_nuclei(red_thresholded)
-        ratio = round(quiescent_count / senescent_count, 3)
+        # Count number of nuclei and nuclei sizes + std
+        quiescent_count,quiescent_size_mean,quiescent_size_std = analyze_nuclei(quiescent_nuclei)
+        senescent_count,senescent_size_mean,senescent_size_std = analyze_nuclei(red_thresholded)
+        if senescent_count>0:
+            ratio = round(quiescent_count / senescent_count, 3)
+        else:
+            ratio = 'inf'
 
         # Save Count Results in excel file
-        saveExcel(img_path, quiescent_count, senescent_count, ratio, program_start_time)
+        saveExcel(img_path, quiescent_count,quiescent_size_mean,quiescent_size_std, senescent_count,senescent_size_mean, ratio,senescent_size_std, program_start_time)
 
         end = time()
         print("     Processing time:", round(end - start, 1), "seconds")
