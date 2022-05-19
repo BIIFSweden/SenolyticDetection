@@ -183,19 +183,22 @@ def analyze_nuclei(img):
 
     region = regionprops(labelled)
 
-    areas = []
-    for i in range(len(region)):
-        areas.append(region[i].area)
-
-    mean_size = np.mean(areas)
-    std_size = np.std(areas)
+    if len(region) > 0:
+        areas = []
+        for i in range(len(region)):
+            areas.append(region[i].area)
+        mean_size = round(np.mean(areas),2)
+        std_size = round(np.std(areas),2)
+    else:
+        mean_size = 0
+        std_size = 0
 
     return count, mean_size, std_size
 
 
 def create_figure(
-    red, red_thresholded, green, quiescent_nuclei, blue, img_path, 
-    program_start_time):
+    red, red_thresholded, green, quiescent_nuclei, blue, img_path, program_start_time
+):
     """Saves .tiff file of nuclei segmentation results
 
     Parameters
@@ -292,27 +295,27 @@ def saveExcel(
     excel_path = os.path.join(storage_directory, "Senescence_Results.xlsx")
 
     # Create Dataframe for current image
+    scenescent_measures = f"{senescent_size_mean} u\u00B1 {senescent_size_std}"
+    quiescence_measures = f"{quiescent_size_mean} u\u00B1 {quiescent_size_std}"
+
     storage_df = pd.DataFrame(
         [
             img_name,
             quiescent_count,
             senescent_count,
             ratio,
-            quiescent_size_mean,
-            quiescent_size_std,
-            senescent_size_mean,
-            senescent_size_std,
+            quiescence_measures,
+            scenescent_measures,
         ]
     ).transpose()
+
     storage_df.columns = [
         "Image",
         "quiescence count",
         "senescence count",
         "quiescence / senescence ratio",
-        "quiescence mean area (pixels^2)",
-        "quiescence std area (pixels^2)",
-        "senescence mean area (pixels^2)",
-        "senescence std area (pixels^2)",
+        "quiescence mean area \u00B1 std (pixels^2)",
+        "senescence mean area \u00B1 std(pixels^2)",
     ]
 
     if os.path.exists(excel_path):
@@ -341,11 +344,14 @@ def main_analysis(directory):
 
     program_start_time = strftime("%Y-%m-%d %H-%M-%S", localtime())
 
+    run_times = []
+
     for i, img_path in enumerate(img_paths):
 
         start = time()
 
         print("Analyzing {0} of {1} images:".format(i + 1, num_images), img_path)
+
         # #Split .nd2 image into seperate channels
         red, green, blue = nd2_import(img_path)
 
@@ -392,12 +398,22 @@ def main_analysis(directory):
             quiescent_size_std,
             senescent_count,
             senescent_size_mean,
-            ratio,
             senescent_size_std,
+            ratio,
             program_start_time,
         )
 
         end = time()
-        print("     Processing time:", round(end - start, 1), "seconds")
+        run_time = end-start
+        run_times.append(run_time)
+        print(f"     Image analysis time: {round(run_time, 1)} seconds")
 
+        if i != num_images-1:
+            remaining_time = np.mean(run_times)*(num_images-(i+1))
+            remaining_time = round(remaining_time/60,1)
+            print(f"     Estimated run time remaining is {remaining_time} minutes")
+
+    print("Analysis Finished.")
+    total_time = round(np.sum(run_times)/60,1)
+    print(f'Total run time: {total_time} minutes')
     return

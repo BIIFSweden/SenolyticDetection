@@ -8,4 +8,4 @@ if __name__ == "__main__":
     gui.mainloop()
     print("Directory chosen.")
     main_analysis(gui.directory)
-    print("Analysis Finished.")
+    
