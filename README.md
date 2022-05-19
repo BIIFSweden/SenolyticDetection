@@ -38,7 +38,7 @@ python setup.py install
 ```bash
 cd src
 ```
-2. Run the program.
+2. With the conda environment activated, run the program.
 ```bash
 python main.py
 ```
