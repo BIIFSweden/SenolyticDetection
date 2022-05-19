@@ -44,14 +44,14 @@ def nd2_import(image_path):
     Returns
     -------
     damaged: The first channel in the .nd2 image
-    healthy: The second channel in the .nd2 image
-    all: The third channel in the .nd2 image
+    quiescent: The second channel in the .nd2 image
+    blue: The third channel in the .nd2 image
     """
 
     with ND2Reader(image_path) as nd2_object:
-        damaged, healthy, all = nd2_object[0], nd2_object[1], nd2_object[2]
+        red, green, blue = nd2_object[0], nd2_object[1], nd2_object[2]
 
-    return damaged, healthy, all
+    return red, green, blue
 
 
 def threshold_with_otsu(img):
@@ -72,7 +72,7 @@ def threshold_with_otsu(img):
     return thresholded
 
 
-def remove_objects_size(img, low_size=100000, high_size=800000, selem_size=8):
+def remove_objects_size(img, low_size=50000, high_size=900000, selem_size=10):
     """Removes binary objects that have a pixel area between low_size and
         high_size. Used to remove well edges.
 
@@ -177,27 +177,27 @@ def count_nuclei(img):
     return len(regions)
 
 
-def mask_3D(RGB, mask):
-    """Applies 2D Binary mask to RGB Image
+# def mask_3D(RGB, mask):
+#     """Applies 2D Binary mask to RGB Image
 
-    Parameters
-    ----------
-    RGB : 3D array, any type
-    mask: Binary/Boolean,
-          2D mask for segmenting RGB image
+#     Parameters
+#     ----------
+#     RGB : 3D array, any type
+#     mask: Binary/Boolean,
+#           2D mask for segmenting RGB image
 
-    Returns
-    ------
-    masked: segmented RGB image
-    """
-    masked = np.zeros(RGB.shape)
-    for i in range(RGB.shape[2]):
-        masked[:, :, i] = mask * RGB[:, :, i]
-    return masked
+#     Returns
+#     ------
+#     masked: segmented RGB image
+#     """
+#     masked = np.zeros(RGB.shape)
+#     for i in range(RGB.shape[2]):
+#         masked[:, :, i] = mask * RGB[:, :, i]
+#     return masked
 
 
 def create_figure(
-    red, red_thresholded, green, healthy_nuclei, blue, img_path, program_start_time
+    red, red_thresholded, green, quiescent_nuclei, blue, img_path, program_start_time
 ):
     """Saves .tiff file of nuclei segmentation results
 
@@ -210,7 +210,7 @@ def create_figure(
                     red channel segmententation mask
     green: dtype any (non-binary),
          green channel (Healthy nuclei + senescent nuclei caused by autofluorescence)
-    green_thresolded: binary,
+    quiescent_nuclei: binary,
                     green channel segmententation mask (with senescent nuclei removed)
     blue: dtype any (non-binary)
           contains
@@ -233,14 +233,15 @@ def create_figure(
     plt.title("All nuclei")
 
     plt.subplot(1, 3, 2)
-    masked = mask_3D(RGB, red_thresholded)
-    plt.imshow(masked)
-    plt.title("Senescent nuclei")
+    #masked = mask_3D(RGB, red_thresholded)
+    plt.imshow(red_thresholded)
+    plt.title("Senescence")
 
     plt.subplot(1, 3, 3)
-    masked = mask_3D(RGB, (healthy_nuclei > 0))
-    plt.imshow(masked)
-    plt.title("Healthy nuclei")
+    #masked = mask_3D(RGB, (healthy_nuclei > 0))
+
+    plt.imshow(quiescent_nuclei > 0)
+    plt.title("Quiescence")
 
     img_dirname = os.path.dirname(img_path)
     img_name = os.path.split(img_path)[-1].strip(".nd2")
@@ -257,16 +258,16 @@ def create_figure(
     return
 
 
-def saveExcel(img_path, healthy_count, senescent_count, ratio, program_start_time):
+def saveExcel(img_path, quiescent_count, senescent_count, ratio, program_start_time):
 
-    """Saves nuclei counts and ratio between healthy and Senescent nucleis
+    """Saves nuclei counts and ratio between Quiescent and Senescent nucleis
 
     Parameters
     ----------
     img_path: str,
               directory name of image under analysis
 
-    healthy_count: int,
+    quiescent_count: int,
                    number of healthy nuclei
     senescent_count: int,
                    number of senescent nuclei
@@ -288,13 +289,13 @@ def saveExcel(img_path, healthy_count, senescent_count, ratio, program_start_tim
 
     # Create Dataframe for current image
     storage_df = pd.DataFrame(
-        [img_name, healthy_count, senescent_count, ratio]
+        [img_name, quiescent_count, senescent_count, ratio]
     ).transpose()
     storage_df.columns = [
         "Image",
-        "healthy count",
-        "senescent count",
-        "healthy / senescent ratio",
+        "quiescence count",
+        "senescence count",
+        "quiescence / senescence ratio",
     ]
 
     if os.path.exists(excel_path):
@@ -340,7 +341,7 @@ def main_analysis(directory):
         red_thresholded = remove_objects_size(red_thresholded)
 
         # Remove green nuclei that are present in red channel based on overlap
-        healthy_nuclei = autofluoresence_removal(red_thresholded, green_thresholded)
+        quiescent_nuclei = autofluoresence_removal(red_thresholded, green_thresholded)
 
         # Save Results Image
         print("     Saving Results...")
@@ -348,19 +349,19 @@ def main_analysis(directory):
             red,
             red_thresholded,
             green,
-            healthy_nuclei,
+            quiescent_nuclei,
             blue,
             img_path,
             program_start_time,
         )
 
         # Count number of nuclei
-        healthy_count = count_nuclei(healthy_nuclei)
+        quiescent_count = count_nuclei(quiescent_nuclei)
         senescent_count = count_nuclei(red_thresholded)
-        ratio = round(healthy_count / senescent_count, 2)
+        ratio = round(quiescent_count / senescent_count, 3)
 
         # Save Count Results in excel file
-        saveExcel(img_path, healthy_count, senescent_count, ratio, program_start_time)
+        saveExcel(img_path, quiescent_count, senescent_count, ratio, program_start_time)
 
         end = time()
         print("     Processing time:", round(end - start, 1), "seconds")
