@@ -40,6 +40,7 @@ cd src
 ```
 2. With the conda environment activated, run the program.
 ```bash
+conda activate senescent
 python main.py
 ```
 3. This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and press Run Analysis.
