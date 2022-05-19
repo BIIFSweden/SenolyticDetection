@@ -69,8 +69,8 @@ def threshold_with_otsu(img):
     thresh = threshold_otsu(img)
     thresholded = img > thresh
 
-    #Zero out thresholding if over 50,000 nuclei detected
-    #Done as if no nuclei present, otsu will background noise
+    # Zero out thresholding if over 50,000 nuclei detected
+    # Done as if no nuclei present, otsu will background noise
     labelled = label(thresholded)
     if np.amax(labelled) > 50000:
         thresholded = np.zeros(thresholded.shape)
@@ -188,15 +188,14 @@ def analyze_nuclei(img):
         areas.append(region[i].area)
 
     mean_size = np.mean(areas)
-    std_size = np.std(areas)   
+    std_size = np.std(areas)
 
-    return count,mean_size,std_size
-
+    return count, mean_size, std_size
 
 
 def create_figure(
-    red, red_thresholded, green, quiescent_nuclei, blue, img_path, program_start_time
-):
+    red, red_thresholded, green, quiescent_nuclei, blue, img_path, 
+    program_start_time):
     """Saves .tiff file of nuclei segmentation results
 
     Parameters
@@ -253,7 +252,17 @@ def create_figure(
     return
 
 
-def saveExcel(img_path, quiescent_count,quiescent_size_mean,quiescent_size_std, senescent_count,senescent_size_mean,senescent_size_std, ratio, program_start_time):
+def saveExcel(
+    img_path,
+    quiescent_count,
+    quiescent_size_mean,
+    quiescent_size_std,
+    senescent_count,
+    senescent_size_mean,
+    senescent_size_std,
+    ratio,
+    program_start_time,
+):
 
     """Saves nuclei counts and ratio between Quiescent and Senescent nucleis
 
@@ -284,17 +293,26 @@ def saveExcel(img_path, quiescent_count,quiescent_size_mean,quiescent_size_std, 
 
     # Create Dataframe for current image
     storage_df = pd.DataFrame(
-        [img_name, quiescent_count, senescent_count, ratio, quiescent_size_mean,quiescent_size_std,senescent_size_mean,senescent_size_std]
+        [
+            img_name,
+            quiescent_count,
+            senescent_count,
+            ratio,
+            quiescent_size_mean,
+            quiescent_size_std,
+            senescent_size_mean,
+            senescent_size_std,
+        ]
     ).transpose()
     storage_df.columns = [
         "Image",
         "quiescence count",
         "senescence count",
         "quiescence / senescence ratio",
-        'quiescence mean area (pixels^2)',
-        'quiescence std area (pixels^2)',
-        'senescence mean area (pixels^2)',
-        'senescence std area (pixels^2)',
+        "quiescence mean area (pixels^2)",
+        "quiescence std area (pixels^2)",
+        "senescence mean area (pixels^2)",
+        "senescence std area (pixels^2)",
     ]
 
     if os.path.exists(excel_path):
@@ -355,15 +373,29 @@ def main_analysis(directory):
         )
 
         # Count number of nuclei and nuclei sizes + std
-        quiescent_count,quiescent_size_mean,quiescent_size_std = analyze_nuclei(quiescent_nuclei)
-        senescent_count,senescent_size_mean,senescent_size_std = analyze_nuclei(red_thresholded)
-        if senescent_count>0:
+        quiescent_count, quiescent_size_mean, quiescent_size_std = analyze_nuclei(
+            quiescent_nuclei
+        )
+        senescent_count, senescent_size_mean, senescent_size_std = analyze_nuclei(
+            red_thresholded
+        )
+        if senescent_count > 0:
             ratio = round(quiescent_count / senescent_count, 3)
         else:
-            ratio = 'inf'
+            ratio = "inf"
 
         # Save Count Results in excel file
-        saveExcel(img_path, quiescent_count,quiescent_size_mean,quiescent_size_std, senescent_count,senescent_size_mean, ratio,senescent_size_std, program_start_time)
+        saveExcel(
+            img_path,
+            quiescent_count,
+            quiescent_size_mean,
+            quiescent_size_std,
+            senescent_count,
+            senescent_size_mean,
+            ratio,
+            senescent_size_std,
+            program_start_time,
+        )
 
         end = time()
         print("     Processing time:", round(end - start, 1), "seconds")
