@@ -13,7 +13,7 @@ The script saves excel files with counts of the scenescent and healthy nuclei. I
 
 ## Installation
 
-1. Create a conda virtual environment (example using virutal environment named senescent). This will be used to run the program in. Afterwards activate the environment.
+1. Create a conda virtual environment (example using virtual environment named senescent). This will be used to run the program in. Afterwards activate the environment.
 ```bash
 conda create -n senescent python=3.9
 conda activate senescent
@@ -22,7 +22,7 @@ conda activate senescent
 2. Open command prompt (windows) or terminal (mac) and change to a directory where you wish to store the program:
 
 ```bash
-cd storage_directory
+cd path/to/store/program
 ```
 
 3. Download the github repository into this directory, change into the Federico-Pietrocola2022-3 directory and setup the environment:
@@ -46,7 +46,7 @@ python main.py
 
 <img width="477" alt="Screen Shot 2022-05-16 at 5 41 03 PM" src="https://user-images.githubusercontent.com/43760657/168631403-fa4f1d85-8062-4be4-a77a-670f177e48a7.png">
 
-4. Monitor the command prompt for updates on the program.
+4. Monitor the command prompt/terminal for updates on the program.
 
 ## Results
 
