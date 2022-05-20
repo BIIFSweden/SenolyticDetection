@@ -4,8 +4,8 @@ from nd2reader import ND2Reader
 import os
 import matplotlib.pyplot as plt
 from skimage.measure import label, regionprops
-from skimage.morphology import binary_dilation, disk
-from skimage.filters import threshold_otsu,gaussian,median
+from skimage.morphology import binary_dilation, disk,binary_opening
+from skimage.filters import threshold_otsu,gaussian
 from time import time
 import pandas as pd
 from time import time, localtime, strftime
@@ -78,7 +78,7 @@ def threshold_with_otsu(img):
     return thresholded
 
 
-def remove_objects_size(img, low_size=8000, high_size=900000, selem_size=10):
+def remove_objects_size(img, low_size=10000, high_size=900000, selem_size=10):
     """Removes binary objects that have a pixel area between low_size and
         high_size. Used to remove well edges.
 
@@ -224,30 +224,30 @@ def create_figure(
     # Create RGB image [0...1]
     RGB = np.dstack((red, green, blue))
     RGB = RGB / (2**16 - 1)
+    zero_array = np.zeros(red_thresholded.shape)
 
     # Plot Images
     figure = plt.figure(figsize=(20, 10))
 
-    plt.subplot(1, 3, 1)
+    plt.subplot(1, 2, 1)
     plt.imshow(RGB)
-    plt.title("All nuclei")
+    plt.title("Original Image")
 
-    plt.subplot(1, 3, 2)
-    plt.imshow(red_thresholded)
-    plt.title("Senescence")
+    plt.subplot(1, 2, 2)
 
-    plt.subplot(1, 3, 3)
-    plt.imshow(quiescent_nuclei > 0)
-    plt.title("Quiescence")
+    RGB_segmentation = np.dstack((red_thresholded,quiescent_nuclei > 0,zero_array))
+    plt.imshow(RGB_segmentation)
+    plt.title("Segmentated Image")
 
     img_dirname = os.path.dirname(img_path)
-    img_name = os.path.split(img_path)[-1].strip(".nd2")
-    print(f'        Image_name: {img_name}')
+    img_name = os.path.split(img_path)[-1]
+    img_name = os.path.splitext(img_name)[0]
 
     storage_directory = os.path.join(img_dirname, "Results " + program_start_time)
     if os.path.exists(storage_directory) is False:
         os.mkdir(storage_directory)
 
+    plt.tight_layout()
     plt.savefig(os.path.join(storage_directory, img_name + ".tiff"), dpi=200)
 
     figure.clf()
@@ -287,7 +287,8 @@ def saveExcel(
     """
 
     img_dirname = os.path.dirname(img_path)
-    img_name = os.path.split(img_path)[-1].strip(".nd2")
+    img_name = os.path.split(img_path)[-1]
+    img_name = os.path.splitext(img_name)[0]
 
     storage_directory = os.path.join(img_dirname, "Results " + program_start_time)
     if os.path.exists(storage_directory) is False:
@@ -296,8 +297,8 @@ def saveExcel(
     excel_path = os.path.join(storage_directory, "Senescence_Results.xlsx")
 
     # Create Dataframe for current image
-    scenescent_measures = f"{senescent_size_mean} u\u00B1 {senescent_size_std}"
-    quiescence_measures = f"{quiescent_size_mean} u\u00B1 {quiescent_size_std}"
+    scenescent_measures = f"{senescent_size_mean} \u00B1 {senescent_size_std}"
+    quiescence_measures = f"{quiescent_size_mean} \u00B1 {quiescent_size_std}"
 
     storage_df = pd.DataFrame(
         [
@@ -357,12 +358,16 @@ def main_analysis(directory):
         red, green, blue = nd2_import(img_path)
 
         # Threshold guassian bliurred images with Otsu
-        green_thresholded = threshold_with_otsu(gaussian(green,0.1))
-        red_thresholded = threshold_with_otsu(gaussian(red,0.1))
+        green_thresholded = threshold_with_otsu(gaussian(green,1))
+        red_thresholded = threshold_with_otsu(gaussian(red,1))
 
         # Remove Well Ring from images based on object size
         green_thresholded = remove_objects_size(green_thresholded)
         red_thresholded = remove_objects_size(red_thresholded)
+
+        #Remove salt noise from thresholding results
+        green_thresholded = binary_opening(green_thresholded,disk(5))
+        red_thresholded = binary_opening(red_thresholded,disk(5))
 
         # Remove green nuclei that are present in red channel based on overlap
         quiescent_nuclei = autofluoresence_removal(red_thresholded, green_thresholded)
