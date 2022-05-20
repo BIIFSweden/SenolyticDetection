@@ -4,11 +4,11 @@
 <img src="https://user-images.githubusercontent.com/43760657/168568815-f88ab2f9-f87c-4223-8bf3-dc6c8b1f995c.jpg" width="400" height="400">
 </p>
 
-This python script is used for high-throughput screening of senescent nuclei. The senescent nuclei appear orange as they are tagged in the red channel but also have autofluorescence in the green channel. The "healthy" nuclei are seen only in the green channel, while the blue channel labels both scenescent and "healthy" nuclei. To count the nuclei, they are first segmented using Otsu Thresholding in the red and green channels.
+This python script is used for high-throughput screening of senescent nuclei. The senescent nuclei appear orange as they are tagged in the red channel but also have autofluorescence in the green channel. The quiescent nuclei are seen only in the green channel, while the blue channel labels both scenescent and quiescent nuclei. To count the nuclei, they are first segmented using Otsu Thresholding in the red and green channels.
 
-To overcome the autofluorescence of the senescent nuclei in the green channel, the nuclei that appear in both the green and red channel are removed from the "healthy" nuclei thresholded results, leaving nuclei that are present only in the green channel.
+To overcome the autofluorescence of the senescent nuclei in the green channel, the nuclei that appear in both the green and red channel are removed from the quiescent nuclei thresholded results, leaving nuclei that are present only in the green channel.
 
-The script saves excel files with counts of the scenescent and healthy nuclei. In addition, it saves .tiff images showing the segmentation results.
+The script saves excel files with counts of the scenescent and quiescent nuclei. In addition, it saves .tiff images showing the segmentation results.
 
 
 ## Installation
@@ -51,6 +51,7 @@ python main.py
 
 ## Results
 
-After the program has finished running, .tiff images with the segmentation results as well as .xlsx files will be saved in the corresponding directories containing the analyzed images.
+After the program has finished running, .tiff images with the segmentation results as well as .xlsx files with nuclei counts and areas will be saved in the corresponding directories containing the analyzed images.
 
-![WellD03_Channel Kinetix Single band tdTomato, Kinetix Single band senolysis  EGFP1, Kinetix Single  Hoechst_Seq0009](https://user-images.githubusercontent.com/43760657/168570960-6872e969-c0b6-4ec9-988a-df49df8b9527.jpg)
+![WellE02_Channel Kinetix Single band tdTomato, Kinetix Single band senolysis  EGFP1, Kinetix Single  Hoechst_Seq0015](https://user-images.githubusercontent.com/43760657/169508353-56c31fbf-d3d1-4fcd-a037-e56914d3960e.jpg)
+
