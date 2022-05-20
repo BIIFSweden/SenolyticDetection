@@ -4,7 +4,7 @@ from nd2reader import ND2Reader
 import os
 import matplotlib.pyplot as plt
 from skimage.measure import label, regionprops
-from skimage.morphology import binary_dilation, disk,binary_opening
+from skimage.morphology import disk,binary_opening
 from skimage.filters import threshold_otsu,gaussian
 from time import time
 import pandas as pd
@@ -101,11 +101,9 @@ def remove_objects_size(img, low_size=10000, high_size=900000, selem_size=10):
           input image with objects between area thresholds removed
     """
 
-    # Perform Binary Dilation to close any small gaps in objects
-    dilated = binary_dilation(img, disk(selem_size))
 
     # Measure properties of each segmented region
-    labelled = label(dilated)
+    labelled = label(img)
     regions = regionprops(labelled)
 
     # Generate inverted mask of regions falling between the low_size and min_size
