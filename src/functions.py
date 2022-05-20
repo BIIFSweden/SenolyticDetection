@@ -5,7 +5,7 @@ import os
 import matplotlib.pyplot as plt
 from skimage.measure import label, regionprops
 from skimage.morphology import binary_dilation, disk
-from skimage.filters import threshold_otsu
+from skimage.filters import threshold_otsu,gaussian,median
 from time import time
 import pandas as pd
 from time import time, localtime, strftime
@@ -78,7 +78,7 @@ def threshold_with_otsu(img):
     return thresholded
 
 
-def remove_objects_size(img, low_size=50000, high_size=900000, selem_size=10):
+def remove_objects_size(img, low_size=8000, high_size=900000, selem_size=10):
     """Removes binary objects that have a pixel area between low_size and
         high_size. Used to remove well edges.
 
@@ -242,6 +242,7 @@ def create_figure(
 
     img_dirname = os.path.dirname(img_path)
     img_name = os.path.split(img_path)[-1].strip(".nd2")
+    print(f'        Image_name: {img_name}')
 
     storage_directory = os.path.join(img_dirname, "Results " + program_start_time)
     if os.path.exists(storage_directory) is False:
@@ -350,14 +351,14 @@ def main_analysis(directory):
 
         start = time()
 
-        print("Analyzing {0} of {1} images:".format(i + 1, num_images), img_path)
+        print("Analyzing image {0} of {1}:".format(i + 1, num_images), img_path)
 
         # #Split .nd2 image into seperate channels
         red, green, blue = nd2_import(img_path)
 
-        # Threshold With Otsu
-        green_thresholded = threshold_with_otsu(green)
-        red_thresholded = threshold_with_otsu(red)
+        # Threshold guassian bliurred images with Otsu
+        green_thresholded = threshold_with_otsu(gaussian(green,0.1))
+        red_thresholded = threshold_with_otsu(gaussian(red,0.1))
 
         # Remove Well Ring from images based on object size
         green_thresholded = remove_objects_size(green_thresholded)
@@ -411,9 +412,8 @@ def main_analysis(directory):
         if i != num_images-1:
             remaining_time = np.mean(run_times)*(num_images-(i+1))
             remaining_time = round(remaining_time/60,1)
-            print(f"     Estimated run time remaining is {remaining_time} minutes")
+            print(f"     Run time remaining: {remaining_time} minutes")
 
-    print("Analysis Finished.")
     total_time = round(np.sum(run_times)/60,1)
-    print(f'Total run time: {total_time} minutes')
+    print(f'Analysis Finished.Total run time: {total_time} minutes')
     return
