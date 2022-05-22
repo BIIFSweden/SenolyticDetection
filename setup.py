@@ -1,3 +1,4 @@
+from importlib.metadata import entry_points
 from setuptools import setup
 from setuptools import find_packages
 
@@ -21,4 +22,9 @@ setup(
         "slicerator",
         "openpyxl",
     ],
+   entry_points={
+                'console_scripts': [
+                'senolysis=main:main',
+                                    ]
+                },
 )
