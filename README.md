@@ -13,10 +13,10 @@ The script saves excel files with counts of the scenescent and quiescent nuclei.
 
 ## Installation
 
-1. Create a conda virtual environment (example using virtual environment named senescent). This will be used to run the program in. Afterwards activate the environment.
+1. Create a conda virtual environment (example using virtual environment named senolysisenv). This will be used to run the program in. Afterwards activate the environment.
 ```bash
-conda create -n senescent python=3.9
-conda activate senescent
+conda create -n senolysisenv python=3.9
+conda activate senolysisenv
 ```
 
 2. Open command prompt (windows) or terminal (mac) and change to a directory where you wish to store the program:
@@ -36,7 +36,7 @@ python setup.py install
 
 1. With the conda environment activated, run the program senolysis.
 ```bash
-conda activate senescent
+conda activate senolysisenv
 senolysis
 ```
 This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and press Run Analysis.
