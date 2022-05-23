@@ -34,16 +34,12 @@ python setup.py install
 
 ## Running the program
 
-1. Change to the src directory inside Federico-Pietrocola2022-3
-```bash
-cd src
-```
-2. With the conda environment activated, run the program.
+1. With the conda environment activated, run the program senolysis.
 ```bash
 conda activate senescent
 senolysis
 ```
-3. This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and press Run Analysis.
+This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and press Run Analysis.
 
 <img width="477" alt="Screen Shot 2022-05-16 at 5 41 03 PM" src="https://user-images.githubusercontent.com/43760657/168631403-fa4f1d85-8062-4be4-a77a-670f177e48a7.png">
 
