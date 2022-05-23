@@ -55,7 +55,7 @@ class GUI(tk.Tk):
 
     # Save inputs and close GUI
     def getInputs(self):
-        self.max_quiescent_area = self.max_quiescent_area_entry.get()
+        self.max_quiescent_area = int(self.max_quiescent_area_entry.get())
         self.after(100, self.destroy())
 
 
