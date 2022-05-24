@@ -4,11 +4,11 @@
 <img src="https://user-images.githubusercontent.com/43760657/168568815-f88ab2f9-f87c-4223-8bf3-dc6c8b1f995c.jpg" width="400" height="400">
 </p>
 
-This python script is used for high-throughput analysis of senescence and quiescence. The senescent nuclei appear orange as they are tagged in the red channel and have autofluorescence in the green channel. Whereas the quiescent nuclei are only seen in the green channel. To analuze the nuclei, they are first segmented using Otsu Thresholding in the red and green channels.
+This python script is used for high-throughput analysis of senescence and quiescence cells. The senescent nuclei appear orange as they are tagged in the red channel and have autofluorescence in the green channel. Whereas the quiescent nuclei are only seen in the green channel. Otsu Thresholding is used to segment the red and green channels.
 
 To overcome the autofluorescence of the senescent nuclei in the green channel, the nuclei that appear in both the green and red channel are removed from the quiescent nuclei thresholded results, leaving nuclei that are present only in the green channel. Additionally there is a user-defined quiescent nucleus area used to remove overly-large nuclei in the green channel.
 
-The script saves excel files with counts of the scenescent and quiescent nuclei and nucleus size statistics. In addition, it saves .tiff images displaing the segmentation results.
+The script saves excel files with counts of the scenescent and quiescent nuclei and size statistics. In addition, it saves .tiff images displaying the segmentation results.
 
 
 ## Installation
@@ -39,7 +39,7 @@ python setup.py install
 conda activate senolysisenv
 senolysis
 ```
-This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and set the maximum allowable area of the quiescent nuclei. Nuclei larger than this present in the green channel are removed. Then, press Run Analysis and monitor the script's progress in the command prompt/terminal.
+This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and set the maximum allowable area of the quiescent nuclei. Nuclei larger than this threshold that are present in the green channel will be removed. Then, press Run Analysis and monitor the script's progress in the command prompt/terminal.
 
 <p align="center">
 <img width="500" alt="Screen Shot 2022-05-24 at 3 27 40 PM" src="https://user-images.githubusercontent.com/43760657/170046498-79d23ed3-3934-4fe8-b461-52c5b5156b16.png">
