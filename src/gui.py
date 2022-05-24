@@ -31,7 +31,7 @@ class GUI(tk.Tk):
         max_quiescent_area_label = tk.Label(self.frame,text="Maximum area (pixels\u00b2) of quiescent nuclei ")
         max_quiescent_area_label.grid(column=0, row=1,padx=5, pady=0)
         self.max_quiescent_area_entry = tk.Entry(self.frame, textvariable=var)
-        self.max_quiescent_area_entry.insert(tk.END, "1500")
+        self.max_quiescent_area_entry.insert(tk.END, "3000")
         self.max_quiescent_area_entry.grid(column=0, row=2,padx=5, pady=0)
 
         # Run Analysis Button
