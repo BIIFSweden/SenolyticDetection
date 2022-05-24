@@ -9,6 +9,7 @@ from skimage.filters import threshold_otsu,gaussian
 from time import time
 import pandas as pd
 from time import time, localtime, strftime
+import csv
 
 
 def find_images(folder_path):
@@ -78,7 +79,7 @@ def threshold_with_otsu(img):
     return thresholded
 
 
-def remove_objects_size(img, low_size=10000, high_size=900000, selem_size=10):
+def remove_objects_size(img, low_size=20000, high_size=900000):
     """Removes binary objects that have a pixel area between low_size and
         high_size. Used to remove well edges.
 
@@ -90,10 +91,6 @@ def remove_objects_size(img, low_size=10000, high_size=900000, selem_size=10):
                the minimum pixel area of objects to be removed
     max_size : int, optional
                the maximum pixel area of objects to be removed
-
-    selem_size : int, optional
-            structuring element size for binary distilation used to fill in
-            gaps of input binary image
 
     Returns
     -------
@@ -124,8 +121,20 @@ def contained_within(centroid, red_channel):
     else:
         return False
 
+def max_quiescent_size(img,max_size):
 
-def autofluoresence_removal(red_channel_thresholded, green_channel_thresholded):
+    labelled = label(img)
+    regions = regionprops(labelled)
+
+    removal_mask = np.ones(img.shape)
+    for nuclei in regions:
+        if nuclei.area > max_size:
+            removal_mask[tuple(nuclei.coords.T.tolist())] = 0
+    out = removal_mask * img
+
+    return out
+
+def autofluoresence_removal(red_channel_thresholded, green_channel_thresholded,max_quiescent_area = 1500):
     """The damaged senescent cells in the red channel have autofluorescence in
         the green channel. Since the green channel is used to detect the healthy
         cells, we must remove any green channel nuclei which also appear in the
@@ -139,6 +148,9 @@ def autofluoresence_removal(red_channel_thresholded, green_channel_thresholded):
                    The thresholded green channel, containing both healthy cells
                    tagged using green fluorescent probes, and senescent cells
                    present due to autofluorescense.
+    max_quiescent_area: int,
+                   Maximum allowable pixel area of quiescent nuclei. Nuclei over
+                   this size will be counted as senescent nuclei.
     Returns
     -------
     healthy_only : boolean,
@@ -152,14 +164,24 @@ def autofluoresence_removal(red_channel_thresholded, green_channel_thresholded):
     red_coordinates = np.nonzero(red_channel_thresholded)
     red_coordinates = np.asarray(red_coordinates).T
 
-    mask = np.ones(green_channel_thresholded.shape)
+    mask_large_nuclei = np.ones(green_channel_thresholded.shape)
 
-    # If green nuclei centroid is within a red nuclei, mask it out
+    #Filter out large green nuclei which are senescent
     for nuclei in regions_green:
-        if contained_within(nuclei.centroid, red_channel_thresholded):
-            mask[tuple(nuclei.coords.T)] = 0
+        if nuclei.area > max_quiescent_area:
+            mask_large_nuclei[tuple(nuclei.coords.T)] = 0
 
-    healthy_only = green_channel_thresholded * mask
+    large_nuclei_removed = mask_large_nuclei*green_channel_thresholded
+    labelled_large_nuclei_removed = label(large_nuclei_removed)
+    regions_large_nuclei_removed = regionprops(labelled_large_nuclei_removed)
+
+    # Check overlap between red/green channel, remove overlapping from green
+    mask_overlap = np.ones(green_channel_thresholded.shape)
+    for nuclei in regions_large_nuclei_removed:
+        if contained_within(nuclei.centroid, red_channel_thresholded):
+            mask_overlap[tuple(nuclei.coords.T)] = 0
+
+    healthy_only = large_nuclei_removed * mask_overlap
     return healthy_only
 
 
@@ -246,7 +268,7 @@ def create_figure(
         os.mkdir(storage_directory)
 
     plt.tight_layout()
-    plt.savefig(os.path.join(storage_directory, img_name + ".tiff"), dpi=200)
+    plt.savefig(os.path.join(storage_directory, img_name + ".tiff"), dpi=100)
 
     figure.clf()
     plt.close()
@@ -329,13 +351,17 @@ def saveExcel(
     return
 
 
-def main_analysis(directory):
+
+def main_analysis(directory,max_quiescent_area):
     """Main function to run the senescent analysis. Saves nuclei counts and
     image segmentation results.
 
     Parameters
     ----------
     directory: folder path which contains images/folders or images to be anaylyzed
+    max_quiescent_area: int,
+                        user-defined parameter for max quiescent nuclei area.
+                        Nuclei in green channel larger than this value are removed.
     """
 
     img_paths = find_images(directory)
@@ -367,8 +393,8 @@ def main_analysis(directory):
         green_thresholded = binary_opening(green_thresholded,disk(5))
         red_thresholded = binary_opening(red_thresholded,disk(5))
 
-        # Remove green nuclei that are present in red channel based on overlap
-        quiescent_nuclei = autofluoresence_removal(red_thresholded, green_thresholded)
+        # Remove green nuclei that are present in red channel based on overlap and nuclei size
+        quiescent_nuclei = autofluoresence_removal(red_thresholded, green_thresholded,max_quiescent_area)
 
         # Save Results Image
         print("     Saving Results...")
