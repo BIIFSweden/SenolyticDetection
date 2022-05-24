@@ -11,7 +11,7 @@ class GUI(tk.Tk):
         # Create Frame
         self.frame = tk.Frame()
         self.frame.grid(columnspan=1,rowspan=4,sticky=tk.W+tk.E)
-        self.title("Scenescent Analysis")
+        self.title("Senolysis Analysis")
         self.frame.grid_rowconfigure((0,2),weight=1)
 
         # Get Directory Input Button
