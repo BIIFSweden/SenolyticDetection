@@ -20,7 +20,8 @@ setup(
         "tk",
         "slicerator",
         "openpyxl",
-        "csv"
+        #"leven",
+        #"python-csv"
     ],
    entry_points={
                 'console_scripts': [
