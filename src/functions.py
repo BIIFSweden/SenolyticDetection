@@ -351,6 +351,19 @@ def saveExcel(
     return
 
 
+def save_user_parameters(folder_path,max_quiescent_area,program_start_time):
+    user_variables = [
+    ["Directory Analyzed", folder_path],
+    ["Max quiescent area", max_quiescent_area],
+]
+    with open(
+        os.path.join(folder_path, f"senolysis_parameters_{program_start_time}.csv"), "w", newline=""
+    ) as csvfile:
+        my_writer = csv.writer(csvfile)
+        my_writer.writerows(user_variables)
+
+    return
+
 
 def main_analysis(directory,max_quiescent_area):
     """Main function to run the senescent analysis. Saves nuclei counts and
@@ -433,6 +446,10 @@ def main_analysis(directory,max_quiescent_area):
             program_start_time,
         )
 
+
+        # Save User Parameters
+        save_user_parameters(directory,max_quiescent_area,program_start_time)
+
         end = time()
         run_time = end-start
         run_times.append(run_time)
@@ -446,3 +463,4 @@ def main_analysis(directory,max_quiescent_area):
     total_time = round(np.sum(run_times)/60,1)
     print(f'Analysis Finished.Total run time: {total_time} minutes')
     return
+
