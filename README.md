@@ -39,7 +39,7 @@ python setup.py install
 conda activate senolysisenv
 senolysis
 ```
-This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and set the maximum allowable area of the quiescent nuclei. Nuclei larger than this threshold that are present in the green channel will be removed. Then, press Run Analysis and monitor the script's progress in the command prompt/terminal.
+This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and set the maximum allowable area of the quiescent nuclei. Most of the quescent nuclei will be properly detected, however if large nuclei are appearing in the green channel (indicated of senescent nuclei), they can be removed using this threshold. Then, press Run Analysis and monitor the script's progress in the command prompt/terminal.
 
 <p align="center">
 <img width="500" alt="Screen Shot 2022-05-24 at 3 27 40 PM" src="https://user-images.githubusercontent.com/43760657/170046498-79d23ed3-3934-4fe8-b461-52c5b5156b16.png">
