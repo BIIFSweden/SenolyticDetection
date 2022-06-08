@@ -403,8 +403,8 @@ def main_analysis(directory,max_quiescent_area):
         red_thresholded = remove_objects_size(red_thresholded)
 
         #Remove salt noise from thresholding results
-        green_thresholded = binary_opening(green_thresholded,disk(5))
-        red_thresholded = binary_opening(red_thresholded,disk(5))
+        green_thresholded = binary_opening(green_thresholded,disk(2))
+        red_thresholded = binary_opening(red_thresholded,disk(2))
 
         # Remove green nuclei that are present in red channel based on overlap and nuclei size
         quiescent_nuclei = autofluoresence_removal(red_thresholded, green_thresholded,max_quiescent_area)
