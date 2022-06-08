@@ -5,7 +5,7 @@ setup(
     name="Federico-Pietrocola2022-3",
     verion="0.0.1",
     description="Senescence quantification",
-    py_modules=["main", "functions",'gui'],
+    py_modules=["senolysis_main", "functions",'gui'],
     package_dir={"": "src"},
     author_email="robert.welch@scilifelab.se",
     author="Robert Welch",
@@ -23,7 +23,7 @@ setup(
     ],
    entry_points={
                 'console_scripts': [
-                'senolysis=main:main',
+                'senolysis=senolysis_main:main',
                                     ]
                 },
 )
