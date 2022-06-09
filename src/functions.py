@@ -1,4 +1,5 @@
 print("Importing Python Modules")
+from ctypes.wintypes import RGB
 import numpy as np
 from nd2reader import ND2Reader
 import os
@@ -10,6 +11,7 @@ from time import time
 import pandas as pd
 from time import time, localtime, strftime
 import csv
+from skimage.exposure import adjust_gamma
 
 
 def find_images(folder_path):
@@ -217,7 +219,7 @@ def analyze_nuclei(img):
 
 
 def create_figure(
-    red, red_thresholded, green, quiescent_nuclei, blue, img_path, program_start_time
+    RGB, RGB_gamma_corrected, red_thresholded, quiescent_nuclei, img_path, program_start_time,parameters
 ):
     """Saves .tiff file of nuclei segmentation results
 
@@ -240,24 +242,39 @@ def create_figure(
                         time-stamp for when analysis began
 
     """
-
-    # Create RGB image [0...1]
-    RGB = np.dstack((red, green, blue))
-    RGB = RGB / (2**16 - 1)
     zero_array = np.zeros(red_thresholded.shape)
 
     # Plot Images
     figure = plt.figure(figsize=(20, 10))
 
-    plt.subplot(1, 2, 1)
-    plt.imshow(RGB)
-    plt.title("Original Image")
+    if parameters.green_gamma == 1 and parameters.red_gamma == 1:
+        title_string = 'Original Image, no gamma correction'
+    
+        plt.subplot(1, 2, 1)
+        plt.imshow(RGB)
+        plt.title(title_string)
 
-    plt.subplot(1, 2, 2)
+        plt.subplot(1, 2, 2)
 
-    RGB_segmentation = np.dstack((red_thresholded,quiescent_nuclei > 0,zero_array))
-    plt.imshow(RGB_segmentation)
-    plt.title("Segmentated Image")
+        RGB_segmentation = np.dstack((red_thresholded,quiescent_nuclei > 0,zero_array))
+        plt.imshow(RGB_segmentation)
+        plt.title("Segmentated Image")
+
+    elif parameters.green_gamma != 1 or parameters.red_gamma != 1:
+
+        plt.subplot(1, 3, 1)
+        plt.imshow(RGB)
+        plt.title('Orginal Image, no gamma correction')
+
+        plt.subplot(1, 3, 2)
+        plt.imshow(RGB_gamma_corrected)
+        plt.title(f'Gamma corrected image, green:{parameters.green_gamma},red:{parameters.red_gamma}')
+
+        plt.subplot(1, 3, 3)
+        RGB_segmentation = np.dstack((red_thresholded,quiescent_nuclei > 0,zero_array))
+        plt.imshow(RGB_segmentation)
+        plt.title("Segmentated Image")
+
 
     img_dirname = os.path.dirname(img_path)
     img_name = os.path.split(img_path)[-1]
@@ -351,13 +368,15 @@ def saveExcel(
     return
 
 
-def save_user_parameters(folder_path,max_quiescent_area,program_start_time):
+def save_user_parameters(parameters,program_start_time):
     user_variables = [
-    ["Directory Analyzed", folder_path],
-    ["Max quiescent area", max_quiescent_area],
+    ["Directory Analyzed", parameters.folder_path],
+    ["Max quiescent area", parameters.max_quiescent_area],
+    ["Green Channel Gamma correction",parameters.green_gamma],
+    ["Red Channel Gamma correction",parameters.red_gamma],
 ]
     with open(
-        os.path.join(folder_path, f"senolysis_parameters_{program_start_time}.csv"), "w", newline=""
+        os.path.join(parameters.folder_path, f"senolysis_parameters_{program_start_time}.csv"), "w", newline=""
     ) as csvfile:
         my_writer = csv.writer(csvfile)
         my_writer.writerows(user_variables)
@@ -365,7 +384,7 @@ def save_user_parameters(folder_path,max_quiescent_area,program_start_time):
     return
 
 
-def main_analysis(directory,max_quiescent_area):
+def main_analysis(parameters):
     """Main function to run the senescent analysis. Saves nuclei counts and
     image segmentation results.
 
@@ -377,7 +396,7 @@ def main_analysis(directory,max_quiescent_area):
                         Nuclei in green channel larger than this value are removed.
     """
 
-    img_paths = find_images(directory)
+    img_paths = find_images(parameters.folder_path)
 
     num_images = len(img_paths)
 
@@ -393,8 +412,21 @@ def main_analysis(directory,max_quiescent_area):
 
         # #Split .nd2 image into seperate channels
         red, green, blue = nd2_import(img_path)
+        RGB_orignal = np.dstack((red, green, blue))
+        RGB_orignal = RGB_orignal / (2**16 - 1)
 
-        # Threshold guassian bliurred images with Otsu
+        #Adjust Image gamma if user specified gamma value != 1
+        if parameters.green_gamma != 1:
+            green  = adjust_gamma(green,gamma=parameters.green_gamma,gain=1)
+
+        if parameters.red_gamma != 1:
+            red  = adjust_gamma(green,gamma=parameters.red_gamma,gain=1)
+        
+        RGB_gamma_corrected = np.dstack((red, green, blue))
+        RGB_gamma_corrected = RGB_gamma_corrected / (2**16 - 1)
+        
+
+        # Threshold guassian blurred images with Otsu
         green_thresholded = threshold_with_otsu(gaussian(green,1))
         red_thresholded = threshold_with_otsu(gaussian(red,1))
 
@@ -407,18 +439,18 @@ def main_analysis(directory,max_quiescent_area):
         red_thresholded = binary_opening(red_thresholded,disk(2))
 
         # Remove green nuclei that are present in red channel based on overlap and nuclei size
-        quiescent_nuclei = autofluoresence_removal(red_thresholded, green_thresholded,max_quiescent_area)
+        quiescent_nuclei = autofluoresence_removal(red_thresholded, green_thresholded,parameters.max_quiescent_area)
 
         # Save Results Image
         print("     Saving Results...")
         create_figure(
-            red,
+            RGB_orignal,
+            RGB_gamma_corrected,
             red_thresholded,
-            green,
             quiescent_nuclei,
-            blue,
             img_path,
             program_start_time,
+            parameters
         )
 
         # Count number of nuclei and nuclei sizes + std
@@ -448,7 +480,7 @@ def main_analysis(directory,max_quiescent_area):
 
 
         # Save User Parameters
-        save_user_parameters(directory,max_quiescent_area,program_start_time)
+        save_user_parameters(parameters,program_start_time)
 
         end = time()
         run_time = end-start
