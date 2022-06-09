@@ -6,7 +6,7 @@
 
 This python script is used for high-throughput analysis of senescence and quiescence cells. The senescent nuclei appear orange as they are tagged in the red channel and have autofluorescence in the green channel. Whereas the quiescent nuclei are only seen in the green channel. Otsu Thresholding is used to segment the red and green channels.
 
-To overcome the autofluorescence of the senescent nuclei in the green channel, the nuclei that appear in both the green and red channel are removed from the quiescent nuclei thresholded results, leaving nuclei that are present only in the green channel. Additionally there is a user-defined quiescent nucleus area used to remove overly-large nuclei in the green channel.
+To overcome the autofluorescence of the senescent nuclei in the green channel, the nuclei that appear in both the green and red channel are removed from the quiescent nuclei thresholded results, leaving nuclei that are present only in the green channel. Additionally there is a user-defined quiescent nucleus area used to remove overly-large nuclei in the green channel as well as gamma adjustment to enhance the red and green channel contrasts.
 
 The script saves excel files with counts of the scenescent and quiescent nuclei and size statistics. In addition, it saves .tiff images displaying the segmentation results.
 
