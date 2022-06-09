@@ -98,4 +98,6 @@ class GUI(tk.Tk):
             self.red_gamma,
             self.green_gamma
         )
+        assert user_parameters.red_gamma > 0, "Red Channel Gamma must be non-negative"
+        assert user_parameters.green_gamma > 0, "Green Channel Gamma must be non-negative"
         return user_parameters
