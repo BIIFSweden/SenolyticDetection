@@ -34,21 +34,32 @@ python setup.py install
 
 ## Running the program
 
-1. With the conda environment activated, run the program senolysis.
+1. With the conda environment activated, run the program senolysis_program.
 ```bash
 conda activate senolysisenv
-senolysis
+senolysis_program
 ```
-This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and set the maximum allowable area of the quiescent nuclei. Most of the quescent nuclei will be properly detected, however if large nuclei are appearing in the green channel (indicated of senescent nuclei), they can be removed using this threshold. Then, press Run Analysis and monitor the script's progress in the command prompt/terminal.
+This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and set the maximum allowable area of the quiescent nuclei. Most of the quescent nuclei will be properly detected, however if large nuclei are appearing in the green channel (indicated of senescent nuclei), they can be removed using this threshold.
+
+Additionally, a gamma correction on the images can be applied by choosing a positive float value. For gamma greater than 1, the histogram will shift towards left and the output image will be darker than the input image.For gamma less than 1, the histogram will shift towards right and the output image will be brighter than the input image. (https://scikit-image.org/docs/stable/api/skimage.exposure.html#skimage.exposure.adjust_gamma)
+
+Then, press Run Analysis and monitor the script's progress in the command prompt/terminal.
 
 <p align="center">
-<img width="500" alt="Screen Shot 2022-05-24 at 3 27 40 PM" src="https://user-images.githubusercontent.com/43760657/170046498-79d23ed3-3934-4fe8-b461-52c5b5156b16.png">
+<img width="482" alt="Screenshot 2022-06-09 at 13 06 08" src="https://user-images.githubusercontent.com/43760657/172833722-3675a16d-e26f-4452-b2f4-ebe61c6238e5.png">
 </p>
+
+
+
 
 ## Results
 
 After the program has finished running, .tiff images with the segmentation results as well as .xlsx files with nuclei counts and areas will be saved in the corresponding directories containing the analyzed images.
 
+Without Gamma Correction (Gamma = 1)
 ![WellE02_Channel Kinetix Single band tdTomato, Kinetix Single band senolysis  EGFP1, Kinetix Single  Hoechst_Seq0015](https://user-images.githubusercontent.com/43760657/170046965-f4a9b199-4ab4-4eb0-b804-e63de4adf3c7.jpg)
+
+With Gamma Correction
+<img width="1460" alt="Screenshot 2022-06-09 at 13 14 28" src="https://user-images.githubusercontent.com/43760657/172834170-1bba1914-82a7-4f63-83b8-cfc09a6b8a75.png">
 
 
