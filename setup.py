@@ -23,7 +23,7 @@ setup(
     ],
    entry_points={
                 'console_scripts': [
-                'senolysis=senolysis_main:main',
+                'senolysis_program=senolysis_main:main',
                                     ]
                 },
 )
