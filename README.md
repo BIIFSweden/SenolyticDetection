@@ -61,5 +61,3 @@ Without Gamma Correction (Gamma = 1)
 
 With Gamma Correction
 <img width="1460" alt="Screenshot 2022-06-09 at 13 14 28" src="https://user-images.githubusercontent.com/43760657/172834170-1bba1914-82a7-4f63-83b8-cfc09a6b8a75.png">
-
-

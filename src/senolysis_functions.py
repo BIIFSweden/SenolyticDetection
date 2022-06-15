@@ -54,11 +54,13 @@ def nd2_import(image_path):
 
     return red, green, blue
 
-def normalize_img(img,low_per=1,high_per=99):
+
+def normalize_img(img, low_per=1, high_per=99):
     from skimage.exposure import rescale_intensity
-    low = np.percentile(img,low_per)
-    high = np.percentile(img,high_per)
-    rescaled = rescale_intensity(img,in_range=(low,high),out_range=(0,1))
+
+    low = np.percentile(img, low_per)
+    high = np.percentile(img, high_per)
+    rescaled = rescale_intensity(img, in_range=(low, high), out_range=(0, 1))
     return rescaled
 
 
@@ -66,25 +68,28 @@ def remove_well_rings(img):
     from skimage.filters import threshold_mean
     from skimage.segmentation import flood_fill
     from skimage.morphology import remove_small_objects
+
     thresh = threshold_mean(img)
-    binary = img>thresh
+    binary = img > thresh
     regions = regionprops(label(binary))
     # Generate inverted mask of regions falling between the low_size and min_size
-    removal_mask = np.ones(img.shape,dtype='bool')
+    removal_mask = np.ones(img.shape, dtype="bool")
     for region in regions:
         if 10000 < region.area:
             removal_mask[tuple(region.coords.T.tolist())] = 0
 
-    #Used to remove corners of images which sometimes remain
-    removal_mask = remove_small_objects(removal_mask,min_size=20000)
+    # Used to remove corners of images which sometimes remain
+    removal_mask = remove_small_objects(removal_mask, min_size=20000)
 
     out = removal_mask * img
     return out
 
-def remove_large_nuclei(img,max_size = 7000):
+
+def remove_large_nuclei(img, max_size=7000):
     from skimage.filters import threshold_mean
+
     thresh = threshold_mean(img)
-    binary = img>thresh
+    binary = img > thresh
     regions = regionprops(label(binary))
     # Generate inverted mask of regions falling between the low_size and min_size
     removal_mask = np.ones(img.shape)
@@ -118,7 +123,8 @@ def threshold_with_otsu(img):
 
     return thresholded
 
-def determine_nuclei_type(mask,red,green,blue):
+
+def determine_nuclei_type(mask, red, green, blue):
 
     nuclei_regions = regionprops(label(mask))
 
@@ -130,12 +136,13 @@ def determine_nuclei_type(mask,red,green,blue):
         green_value = np.mean(green[tuple(nuclei_coordinates.T)])
         blue_value = np.mean(blue[tuple(nuclei_coordinates.T)])
 
-        if red_value>green_value and red_value>blue_value:
+        if red_value > green_value and red_value > blue_value:
             scenescent[tuple(nuclei_coordinates.T)] = 1
         else:
-             quiescent[tuple(nuclei_coordinates.T)] = 1
-    
+            quiescent[tuple(nuclei_coordinates.T)] = 1
+
     return np.bool_(scenescent), np.bool_(quiescent)
+
 
 def determine_count_and_area(mask):
 
@@ -148,23 +155,24 @@ def determine_count_and_area(mask):
         areas = []
         for i in range(len(region)):
             areas.append(region[i].area)
-        mean_size = round(np.mean(areas),2)
-        std_size = round(np.std(areas),2)
+        mean_size = round(np.mean(areas), 2)
+        std_size = round(np.std(areas), 2)
     else:
         mean_size = 0
         std_size = 0
-    
+
     return count, mean_size, std_size
 
-def analyze_nuclei(scenescent_mask,quiescent_mask,img_path):
-    
-    count_q,area_q,std_q = determine_count_and_area(quiescent_mask)
-    count_s,area_s,std_s = determine_count_and_area(scenescent_mask)
-    
-    if count_s>0:
-        ratio = round(count_q/count_s,3)
+
+def analyze_nuclei(scenescent_mask, quiescent_mask, img_path):
+
+    count_q, area_q, std_q = determine_count_and_area(quiescent_mask)
+    count_s, area_s, std_s = determine_count_and_area(scenescent_mask)
+
+    if count_s > 0:
+        ratio = round(count_q / count_s, 3)
     else:
-        ratio = 'inf'
+        ratio = "inf"
     scenescent_measures = f"{area_s} \u00B1 {std_s}"
     quiescence_measures = f"{area_q} \u00B1 {std_q}"
 
@@ -192,20 +200,22 @@ def analyze_nuclei(scenescent_mask,quiescent_mask,img_path):
     return storage_df
 
 
-def create_figure(RGB, scenescent, quinescent, save_path,img_name):
-   
+def create_figure(RGB, scenescent, quinescent, save_path, img_name):
+
     # Plot Images
     fig = plt.figure(figsize=(5, 5))
 
-    marked = mark_boundaries(RGB,scenescent,outline_color=(1,0,0),mode='thick')
-    marked = mark_boundaries(marked,quinescent,outline_color=(0,1,0),mode='thick')
+    marked = mark_boundaries(RGB, scenescent, outline_color=(1, 0, 0), mode="thick")
+    marked = mark_boundaries(marked, quinescent, outline_color=(0, 1, 0), mode="thick")
     plt.imshow(marked)
 
-    plt.title('Original Image with segmentations outlined')
-    custom_lines = [Line2D([0], [0], color=(1,0,0), lw=2),
-                Line2D([0], [0], color=(0,1,0), lw=2)]
+    plt.title("Original Image with segmentations outlined")
+    custom_lines = [
+        Line2D([0], [0], color=(1, 0, 0), lw=2),
+        Line2D([0], [0], color=(0, 1, 0), lw=2),
+    ]
 
-    plt.legend(custom_lines, ['Senescent', 'Quiescent'],prop={'size': 6})
+    plt.legend(custom_lines, ["Senescent", "Quiescent"], prop={"size": 6})
 
     plt.tight_layout()
     plt.savefig(os.path.join(save_path, img_name + ".png"), dpi=500)
@@ -214,6 +224,7 @@ def create_figure(RGB, scenescent, quinescent, save_path,img_name):
     plt.close()
 
     return
+
 
 def write_csv(pandas_dataframe, directory):
     # Writes the CSV file of  pandas dataframe to specified directory
