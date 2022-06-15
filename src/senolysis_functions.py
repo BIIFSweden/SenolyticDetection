@@ -1,4 +1,3 @@
-from ctypes.wintypes import RGB
 import numpy as np
 from nd2reader import ND2Reader
 import os
@@ -7,10 +6,10 @@ from skimage.measure import label, regionprops
 from skimage.filters import threshold_otsu
 from time import time
 import pandas as pd
-import csv
 from skimage.segmentation import mark_boundaries
+from skimage.exposure import rescale_intensity
+from PIL import Image
 from matplotlib.lines import Line2D
-
 
 def find_images(folder_path):
     """Finds the paths of all .nd2 images within specified path. Normalizes
@@ -199,17 +198,17 @@ def analyze_nuclei(scenescent_mask, quiescent_mask, img_path):
 
     return storage_df
 
-
+#Uses matlplotlib to save image, pretty but very slow
 def create_figure(RGB, scenescent, quinescent, save_path, img_name):
 
     # Plot Images
-    fig = plt.figure(figsize=(5, 5))
+    plt.figure(figsize=(5, 5))
 
     marked = mark_boundaries(RGB, scenescent, outline_color=(1, 0, 0), mode="thick")
     marked = mark_boundaries(marked, quinescent, outline_color=(0, 1, 0), mode="thick")
     plt.imshow(marked)
 
-    plt.title("Original Image with segmentations outlined")
+    plt.title("Segmentation Results")
     custom_lines = [
         Line2D([0], [0], color=(1, 0, 0), lw=2),
         Line2D([0], [0], color=(0, 1, 0), lw=2),
@@ -224,6 +223,21 @@ def create_figure(RGB, scenescent, quinescent, save_path, img_name):
     plt.close()
 
     return
+
+#Tested with Pillow, not any faster to save image...
+# def create_figure(RGB, scenescent, quinescent, save_path, img_name):
+
+#     # Plot Images
+
+#     marked = mark_boundaries(RGB, scenescent, outline_color=(1, 0, 0), mode="thick")
+#     marked = mark_boundaries(marked, quinescent, outline_color=(0, 1, 0), mode="thick")
+#     marked_uint8 = rescale_intensity(marked,out_range='uint8')
+
+#     im_to_save = Image.fromarray(marked_uint8).convert('RGB')
+#     im_to_save.save(os.path.join(save_path, img_name + ".jpeg"),quality = 95)
+
+
+#     return
 
 
 def write_csv(pandas_dataframe, directory):
