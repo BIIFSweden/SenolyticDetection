@@ -70,8 +70,7 @@ def senolysis_analysis(img_path, program_start_time):
 
     write_csv(results_dataframe, os.path.join(save_path, "Senolysis_measures.csv"))
 
-    RGB = np.dstack([red, green, blue])
-    RGB = normalize_img(RGB)
+    RGB = np.dstack([red_norm, green_norm, blue_norm])
 
     img_name = os.path.split(img_path)[-1]
     img_name = os.path.splitext(img_name)[0]
