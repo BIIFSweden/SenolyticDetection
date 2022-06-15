@@ -136,7 +136,7 @@ def determine_nuclei_type(mask, red, green, blue):
         green_value = np.mean(green[tuple(nuclei_coordinates.T)])
         blue_value = np.mean(blue[tuple(nuclei_coordinates.T)])
 
-        if red_value > green_value and red_value > blue_value:
+        if red_value > green_value or red_value > blue_value:
             scenescent[tuple(nuclei_coordinates.T)] = 1
         else:
             quiescent[tuple(nuclei_coordinates.T)] = 1
