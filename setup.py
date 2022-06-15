@@ -21,7 +21,7 @@ setup(
         "slicerator",
         "openpyxl",
         "tqdm_joblib",
-        "multiprocessing"
+        "joblib"
     
     ],
 
