@@ -20,7 +20,7 @@ def main():
     num_images = len(img_paths)
 
     # Use parallel processing for larger image set
-    if num_images > 9:
+    if num_images > 9 and cpu_count() > 1:
         cpus_to_use = cpu_count()
         if num_images < cpus_to_use:
             cpus_to_use = num_images
