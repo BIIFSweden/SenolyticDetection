@@ -20,8 +20,9 @@ def main():
     num_images = len(img_paths)
 
     # Use parallel processing for larger image set
-    if num_images > 9 and cpu_count() > 1:
-        cpus_to_use = cpu_count()
+    num_cpus = cpu_count()
+    if num_images > 9 and num_cpus > 1:
+        cpus_to_use = num_cpus
         if num_images < cpus_to_use:
             cpus_to_use = num_images
         print(f"Number of Images greater than 9. Using {cpus_to_use} CPUs for parallel processing.")
@@ -40,8 +41,6 @@ def main():
             senolysis_analysis(img_path, program_start_time)
             for img_path in tqdm(img_paths)
         ]
-
-    sleep(1)
 
     print(f"Finished Analysis")
     return None
