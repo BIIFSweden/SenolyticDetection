@@ -19,24 +19,24 @@ def main():
 
     num_images = len(img_paths)
 
-    # Use parallel processing for larger image set
-    num_cpus = cpu_count()
-    if num_images > 9 and num_cpus > 1:
-        cpus_to_use = num_cpus
-        if num_images < cpus_to_use:
-            cpus_to_use = num_images
-        print(f"Number of Images greater than 9. Using {cpus_to_use} CPUs for parallel processing.")
+    # Use parallel processing for larger image set, save 2 cpus for background work...
+    
+    cpus_to_use = gui.num_jobs
+    assert cpus_to_use > 0 and cpus_to_use <=os.cpu_count(), f'Number of jobs must integer value be between 1 and {os.cpu_count()}'
+    print(f"Using {cpus_to_use} CPUs for parallel processing.")
 
-        # Parallelize image analsyis with progress bar
-        print(f"Analyzing {len(img_paths)} images")
+    print(f"Analyzing {len(img_paths)} images")
+
+    # Parallelize image analsyis with progress bar
+    if cpus_to_use>1:
         with tqdm_joblib(tqdm(desc="Progress", total=len(img_paths))) as progress_bar:
             Parallel(n_jobs=cpus_to_use)(
                 delayed(senolysis_analysis)(img_path, program_start_time)
                 for img_path in img_paths
             )
 
-    else:
-        print(f"Number of Images less than 10, processing images in series.")
+    elif cpus_to_use==1:
+        print(f"Number of jobs = 1, processing images in series.")
         [
             senolysis_analysis(img_path, program_start_time)
             for img_path in tqdm(img_paths)
@@ -44,7 +44,6 @@ def main():
 
     print(f"Finished Analysis")
     return None
-
 
 if __name__ == "__main__":
     main()
