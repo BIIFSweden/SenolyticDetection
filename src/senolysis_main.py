@@ -18,24 +18,23 @@ def main():
     img_paths = find_images(gui.directory)
 
     num_images = len(img_paths)
+    print(f'Total number of images to analyze: {num_images}')
 
     # Use parallel processing for larger image set, save 2 cpus for background work...
     
-    cpus_to_use = gui.num_jobs
-    assert cpus_to_use > 0 and cpus_to_use <=os.cpu_count(), f'Number of jobs must integer value be between 1 and {os.cpu_count()}'
-    print(f"Using {cpus_to_use} CPUs for parallel processing.")
-
-    print(f"Analyzing {len(img_paths)} images")
+    
+    assert gui.num_jobs > 0 and gui.num_jobs <=os.cpu_count(), f'Number of jobs must integer value be between 1 and {os.cpu_count()}'
+    print(f"Analyzing {gui.num_jobs} images in parallel")
 
     # Parallelize image analsyis with progress bar
-    if cpus_to_use>1:
+    if gui.num_jobs>1:
         with tqdm_joblib(tqdm(desc="Progress", total=len(img_paths))) as progress_bar:
-            Parallel(n_jobs=cpus_to_use)(
+            Parallel(n_jobs=gui.num_jobs)(
                 delayed(senolysis_analysis)(img_path, program_start_time)
                 for img_path in img_paths
             )
 
-    elif cpus_to_use==1:
+    elif gui.num_jobs==1:
         print(f"Number of jobs = 1, processing images in series.")
         [
             senolysis_analysis(img_path, program_start_time)
