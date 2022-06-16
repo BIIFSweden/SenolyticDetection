@@ -72,7 +72,9 @@ def senolysis_analysis(img_path, program_start_time):
     if os.path.exists(save_path) is False:
         os.mkdir(save_path)
 
-    write_csv(results_dataframe, os.path.join(save_path, "Senolysis_measures.csv"))
+    #write_csv(results_dataframe, os.path.join(save_path, "Senolysis_measures.csv"))
+
+    saveExcel(results_dataframe, os.path.join(save_path, "Senolysis_measures.xlsx"))
 
     #RGB = np.dstack([normalize_img(red,99), normalize_img(green,99), normalize_img(blue,99)])
     RGB = np.dstack([red_norm,green_norm,blue_norm])

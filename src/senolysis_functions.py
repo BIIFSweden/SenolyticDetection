@@ -250,3 +250,15 @@ def write_csv(pandas_dataframe, directory):
         new_file = pd.concat([existing, pandas_dataframe], axis=0, ignore_index=False)
         new_file.to_csv(directory, header=True, index=False)
     return
+
+def saveExcel(pandas_dataframe,directory):
+
+    if os.path.exists(directory):
+        existing_excel = pd.read_excel(directory)
+        new_excel = pd.concat([existing_excel, pandas_dataframe], axis=0, ignore_index=True)
+        new_excel.to_excel(directory, index=False)
+
+    else:
+        pandas_dataframe.to_excel(directory, index=False)
+
+    return
