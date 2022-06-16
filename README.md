@@ -1,8 +1,11 @@
 # Federico-Pietrocola2022-3
 
-<p align="left">
-![orignal](https://user-images.githubusercontent.com/43760657/174071699-15289830-941b-4dfe-b3cd-43ec718b965a.jpg)
-![1](https://user-images.githubusercontent.com/43760657/174071833-c0e3da7e-de94-45b5-a0dd-52983dcfdc67.jpg)
+Input
+
+<p align="center">
+
+<img width="300" alt="Screenshot 2022-06-16 at 14 59 02" src="https://user-images.githubusercontent.com/43760657/174075019-ca8fadf0-8f81-44cf-b19d-f48faca53c3f.png"> 
+<img width="330" alt="Screenshot 2022-06-16 at 14 58 15" src="https://user-images.githubusercontent.com/43760657/174074881-ed73abe6-9f27-4cf0-bfc1-7f0183d9a64a.png">
 </p>
 This python script is used for high-throughput analysis of senescence and quiescence cells. The senescent nuclei appear orange as they are tagged in the red channel and have autofluorescence in the green channel. Whereas the quiescent nuclei are only seen in the green channel. Otsu Thresholding is used to segment the blue channel, which marks the nuclei of the cells.
 
@@ -53,5 +56,4 @@ Then, press Run Analysis and monitor the script's progress in the command prompt
 
 ## Results
 After the program has finished running, .png images with the segmentation results as well as .csv files with nuclei counts and areas will be saved in the corresponding directories containing the analyzed images.
-
 
