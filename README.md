@@ -1,7 +1,5 @@
 # Federico-Pietrocola2022-3
 
-Input
-
 <p align="center">
 
 <img width="300" alt="Screenshot 2022-06-16 at 14 59 02" src="https://user-images.githubusercontent.com/43760657/174075019-ca8fadf0-8f81-44cf-b19d-f48faca53c3f.png"> 
