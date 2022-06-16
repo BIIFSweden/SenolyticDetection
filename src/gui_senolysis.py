@@ -1,5 +1,8 @@
+from dataclasses import dataclass
 import tkinter as tk
 from tkinter.filedialog import askdirectory
+import os
+
 
 class GUI(tk.Tk):
     def __init__(self):
@@ -22,6 +25,15 @@ class GUI(tk.Tk):
         )
         browse_btun.pack()
 
+       # Get Number of jobs
+        self.num_jobs_label = tk.Label(
+            self.frame, text=f"Enter number of images to run in parallel (max: {os.cpu_count()})"
+        )
+        self.num_jobs_label.pack()
+        self.num_jobs_entry = tk.Entry(self.frame, textvariable=tk.StringVar())
+        self.num_jobs_entry.insert(tk.END, "1")
+        self.num_jobs_entry.pack()
+
         # Run Analysis Button
         run_text = tk.StringVar()
         run_text.set("Run Analysis")
@@ -42,5 +54,5 @@ class GUI(tk.Tk):
 
     # Save inputs and close GUI
     def quit(self):
+        self.num_jobs = int(self.num_jobs_entry.get())
         self.after(100, self.destroy()) 
-
