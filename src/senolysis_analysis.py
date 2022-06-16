@@ -1,7 +1,7 @@
 from skimage.transform import downscale_local_mean
 from skimage.filters import gaussian
 from senolysis_functions import *
-from skimage.morphology import binary_opening, remove_small_holes, disk
+from skimage.morphology import binary_opening, remove_small_holes, disk,remove_small_objects
 from skimage.transform import resize
 
 
@@ -56,6 +56,10 @@ def senolysis_analysis(img_path, program_start_time):
     # Upsample segmentation results back to orignal image size
     scenescent_upscaled = resize(scenescent_downscaled, output_shape=blue.shape)
     quiescent_upscaled = resize(quiescent_downscaled, output_shape=blue.shape)
+
+    #Remove any nuclei smaller than 150 pixels
+    scenescent_upscaled = remove_small_objects(scenescent_upscaled,min_size=150)
+    quiescent_upscaled = remove_small_objects(quiescent_upscaled,min_size=150)
 
     # Measures counts and nuclei mean size + std
     results_dataframe = analyze_nuclei(
