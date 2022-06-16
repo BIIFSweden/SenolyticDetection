@@ -18,8 +18,8 @@ To speed up the computation for high-throughput analysis, the images are downsam
 
 1. Create a conda virtual environment (example using virtual environment named senolysisenv). This will be used to run the program in. Afterwards activate the environment.
 ```bash
-conda create -n senolysisenv1 python=3.9
-conda activate senolysisenv1
+conda create -n senolysisenv2 python=3.9
+conda activate senolysisenv2
 ```
 
 2. Open command prompt (windows) or terminal (mac) and change to a directory where you wish to store the program:
@@ -39,7 +39,7 @@ python setup.py install
 
 1. With the conda environment activated, run the program senolysis_program.
 ```bash
-conda activate senolysisenv1
+conda activate senolysisenv2
 senolysisprogram
 ```
 This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and set the maximum allowable area of the quiescent nuclei.
