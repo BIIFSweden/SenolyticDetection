@@ -7,13 +7,14 @@ Input
 <img width="300" alt="Screenshot 2022-06-16 at 14 59 02" src="https://user-images.githubusercontent.com/43760657/174075019-ca8fadf0-8f81-44cf-b19d-f48faca53c3f.png"> 
 <img width="330" alt="Screenshot 2022-06-16 at 14 58 15" src="https://user-images.githubusercontent.com/43760657/174074881-ed73abe6-9f27-4cf0-bfc1-7f0183d9a64a.png">
 </p>
+
 This python script is used for high-throughput analysis of senescence and quiescence cells. The senescent nuclei appear orange as they are tagged in the red channel and have autofluorescence in the green channel. Whereas the quiescent nuclei are only seen in the green channel. Otsu Thresholding is used to segment the blue channel, which marks the nuclei of the cells.
 
 To classify the cells, the mean intensity of the red channel, green channel and blue channels are caluclated for each nucleus. If the red channel intensity is greater than either the green or blue intensity, it is classified as senescent, else it is tagged as quiescent. Nuclei under 150 pixels in area are removed from the segmentation / results.
 
 The script saves csv files with counts of the scenescent and quiescent nuclei and size statistics. In addition, it saves .png images displaying the segmentation results.
 
-To speed up the computation for high-throughput analysis, the images are downsampled to 1/4 of their original size/resolution. After segmentation, the masks are upscaled to their native resolution. In addition parallel processing is used if chosen by the user in the GUI.
+To speed up the computation for high-throughput analysis, the images are downsampled to 1/4 of their original resolution or 1/16th of their orignal size. After segmentation, the masks are upscaled to their native resolution. In addition parallel processing is used if chosen by the user in the GUI.
 
 ## Installation
 
