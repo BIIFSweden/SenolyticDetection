@@ -4,12 +4,13 @@
 <img src="https://user-images.githubusercontent.com/43760657/168568815-f88ab2f9-f87c-4223-8bf3-dc6c8b1f995c.jpg" width="400" height="400">
 </p>
 
-This python script is used for high-throughput analysis of senescence and quiescence cells. The senescent nuclei appear orange as they are tagged in the red channel and have autofluorescence in the green channel. Whereas the quiescent nuclei are only seen in the green channel. Otsu Thresholding is used to segment the red and green channels.
+This python script is used for high-throughput analysis of senescence and quiescence cells. The senescent nuclei appear orange as they are tagged in the red channel and have autofluorescence in the green channel. Whereas the quiescent nuclei are only seen in the green channel. Otsu Thresholding is used to segment the blue channel, which marks the nuclei of the cells.
 
-To overcome the autofluorescence of the senescent nuclei in the green channel, the nuclei that appear in both the green and red channel are removed from the quiescent nuclei thresholded results, leaving nuclei that are present only in the green channel. Additionally there is a user-defined quiescent nucleus area used to remove overly-large nuclei in the green channel as well as gamma adjustment to enhance the red and green channel contrasts.
+To classify the cells, the mean intensity of the red channel, green channel and blue channels are caluclated for each nucleus. If the red channel intensity is greater than either the green or blue intensity, it is classified as senescent, else it is tagged as quiescent. Nuclei under 150 pixels in area are removed from the segmentation / results.
 
-The script saves excel files with counts of the scenescent and quiescent nuclei and size statistics. In addition, it saves .tiff images displaying the segmentation results.
+The script saves csv files with counts of the scenescent and quiescent nuclei and size statistics. In addition, it saves .png images displaying the segmentation results.
 
+To speed up the computation for high-throughput analysis, the images are downsampled to 1/4 of their original size/resolution. After segmentation, the masks are upscaled to their native resolution. In addition parallel processing is used if chosen by the user in the GUI.
 
 ## Installation
 
@@ -37,27 +38,21 @@ python setup.py install
 1. With the conda environment activated, run the program senolysis_program.
 ```bash
 conda activate senolysisenv
-senolysis_program
+senolysisprogram
 ```
-This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and set the maximum allowable area of the quiescent nuclei. Most of the quescent nuclei will be properly detected, however if large nuclei are appearing in the green channel (indicated of senescent nuclei), they can be removed using this threshold.
+This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and set the maximum allowable area of the quiescent nuclei.
 
-Additionally, a gamma correction on the images can be applied by choosing a positive float value. For gamma greater than 1, the histogram will shift towards left and the output image will be darker than the input image.For gamma less than 1, the histogram will shift towards right and the output image will be brighter than the input image. (https://scikit-image.org/docs/stable/api/skimage.exposure.html#skimage.exposure.adjust_gamma)
+The user has the option to choose how many images are analyzed in parallel. 
 
 Then, press Run Analysis and monitor the script's progress in the command prompt/terminal.
 
 <p align="center">
-<img width="482" alt="Screenshot 2022-06-09 at 13 06 08" src="https://user-images.githubusercontent.com/43760657/172833722-3675a16d-e26f-4452-b2f4-ebe61c6238e5.png">
+<img width="481" alt="Screenshot 2022-06-16 at 14 36 12" src="https://user-images.githubusercontent.com/43760657/174070999-0789315e-a3d7-4904-b365-944b0b6d8d85.png">
 </p>
-
-
 
 
 ## Results
 
-After the program has finished running, .tiff images with the segmentation results as well as .xlsx files with nuclei counts and areas will be saved in the corresponding directories containing the analyzed images.
+After the program has finished running, .png images with the segmentation results as well as .csv files with nuclei counts and areas will be saved in the corresponding directories containing the analyzed images.
 
-Without Gamma Correction (Gamma = 1)
-![WellE02_Channel Kinetix Single band tdTomato, Kinetix Single band senolysis  EGFP1, Kinetix Single  Hoechst_Seq0015](https://user-images.githubusercontent.com/43760657/170046965-f4a9b199-4ab4-4eb0-b804-e63de4adf3c7.jpg)
 
-With Gamma Correction
-<img width="1460" alt="Screenshot 2022-06-09 at 13 14 28" src="https://user-images.githubusercontent.com/43760657/172834170-1bba1914-82a7-4f63-83b8-cfc09a6b8a75.png">
