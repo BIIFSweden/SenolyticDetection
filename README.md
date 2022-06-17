@@ -1,8 +1,6 @@
 # Federico-Pietrocola2022-3
 
 <p align="center">
-
-<img width="300" alt="Screenshot 2022-06-16 at 14 59 02" src="https://user-images.githubusercontent.com/43760657/174075019-ca8fadf0-8f81-44cf-b19d-f48faca53c3f.png"> 
 <img width="330" alt="Screenshot 2022-06-16 at 14 58 15" src="https://user-images.githubusercontent.com/43760657/174074881-ed73abe6-9f27-4cf0-bfc1-7f0183d9a64a.png">
 </p>
 
