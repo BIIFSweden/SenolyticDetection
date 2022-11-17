@@ -73,9 +73,8 @@ def nd2_import(image_path):
                     ind_EGFP = 1
                     ind_hoechst = 2
 
-                    warnings.warn('''Ordering of .nd2 channels cannot be resolved. Naming of
-                                    channels likely incorrect. Assuming the channel order uses 
-                                    Senescent, Quiescent then Nuclei stains.
+                    warnings.warn('''Naming of .nd2 channels cannot be resolved. Assuming the 
+                                    channel order is Senescent, Quiescent then Nuclei stain.
                     ''')
                                    
             return nd2_object[ind_senolysis], nd2_object[ind_EGFP], nd2_object[ind_hoechst]
