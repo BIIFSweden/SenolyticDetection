@@ -4,12 +4,10 @@ import os
 import matplotlib.pyplot as plt
 from skimage.measure import label, regionprops
 from skimage.filters import threshold_otsu
-from time import time
 import pandas as pd
 from skimage.segmentation import mark_boundaries
-from skimage.exposure import rescale_intensity
-from PIL import Image
 from matplotlib.lines import Line2D
+import warnings
 
 def find_images(folder_path):
     """Finds the paths of all .nd2 images within specified path. Normalizes
@@ -33,25 +31,54 @@ def find_images(folder_path):
                 image_paths.append(os.path.join(root, name))
     return image_paths
 
+def standardize_strings(names):
+        '''makes string or list of strings lowercase and removes extra spaces.
+        '''
+        if isinstance(names,list):
+            names = [" ".join(x.strip().split()) for x in names]
+            names = [x.lower() for x in names]
+            return names
+        elif isinstance(names,str):
+            names = " ".join(names.strip().split())
+            names = names.lower()
+            return names
+        else:
+            raise ValueError('names should be a string or list of strings') 
 
 def nd2_import(image_path):
-    """Splits 3 channel .nd2 2D image into 3x 2D numpy arrays
 
-    Parameters
-    ----------
-    image_path : the directory path of the .nd2 image to be imported
 
-    Returns
-    -------
-    damaged: The first channel in the .nd2 image
-    quiescent: The second channel in the .nd2 image
-    blue: The third channel in the .nd2 image
-    """
+        #List of possible image names
+        hoechst_possbile_names = standardize_strings(['senolysis hoechst','hoechst','kinetix single hoechst'])
+        senolysis_possible_names = standardize_strings(['senolysis',' Kinetix Single band tdTomato', 'tdTomato'])
+        EGFP_possible_namess = standardize_strings(['senolysis egfp',' Kinetix Single band senolysis  EGFP1', 'egfp1','egfp'])
 
-    with ND2Reader(image_path) as nd2_object:
-        red, green, blue = nd2_object[0], nd2_object[1], nd2_object[2]
+        with ND2Reader(image_path) as nd2_object:
+            
+            # Get channel names
+            metadata = nd2_object.metadata
+            channels = metadata['channels']
 
-    return red, green, blue
+            # Return channels in correct order
+            for i,channel in enumerate(channels):
+                channel = standardize_strings(channel) 
+                if channel in hoechst_possbile_names:
+                    ind_hoechst = i
+                elif channel.lower() in senolysis_possible_names:
+                    ind_senolysis = i
+                elif channel.lower() in EGFP_possible_namess:
+                    ind_EGFP = i
+                else:
+                    ind_senolysis = 0
+                    ind_EGFP = 1
+                    ind_hoechst = 2
+
+                    warnings.warn('''Ordering of .nd2 channels cannot be resolved. Naming of
+                                    channels likely incorrect. Assuming the channel order uses 
+                                    Senescent, Quiescent then Nuclei stains.
+                    ''')
+                                   
+            return nd2_object[ind_senolysis], nd2_object[ind_EGFP], nd2_object[ind_hoechst]
 
 
 def normalize_img(img, low_per=1, high_per=99):
@@ -204,14 +231,14 @@ def create_figure(RGB, scenescent, quinescent, save_path, img_name):
     # Plot Images
     plt.figure(figsize=(5, 5))
 
-    marked = mark_boundaries(RGB, scenescent, outline_color=(1, 0, 0), mode="thick")
-    marked = mark_boundaries(marked, quinescent, outline_color=(0, 1, 0), mode="thick")
+    marked = mark_boundaries(RGB, scenescent, color=(1, 1, 0), mode="thick")
+    marked = mark_boundaries(marked, quinescent, color=(1, 0, 0), mode="thick")
     plt.imshow(marked)
 
     plt.title("Segmentation Results")
     custom_lines = [
+        Line2D([0], [0], color=(1, 1, 0), lw=2),
         Line2D([0], [0], color=(1, 0, 0), lw=2),
-        Line2D([0], [0], color=(0, 1, 0), lw=2),
     ]
 
     plt.legend(custom_lines, ["Senescent", "Quiescent"], prop={"size": 6})
