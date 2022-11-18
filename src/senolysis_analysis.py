@@ -54,8 +54,8 @@ def senolysis_analysis(img_path, program_start_time):
     )
 
     # Upsample segmentation results back to orignal image size
-    scenescent_upscaled = resize(scenescent_downscaled, output_shape=blue.shape)
-    quiescent_upscaled = resize(quiescent_downscaled, output_shape=blue.shape)
+    scenescent_upscaled = resize(scenescent_downscaled, output_shape=red.shape)
+    quiescent_upscaled = resize(quiescent_downscaled, output_shape=green.shape)
 
     #Remove any nuclei smaller than 150 pixels
     scenescent_upscaled = remove_small_objects(scenescent_upscaled,min_size=150)
