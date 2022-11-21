@@ -8,6 +8,7 @@ import pandas as pd
 from skimage.segmentation import mark_boundaries
 from matplotlib.lines import Line2D
 import warnings
+from skimage.filters import threshold_mean
 
 def find_images(folder_path):
     """Finds the paths of all .nd2 images within specified path. Normalizes
@@ -46,8 +47,7 @@ def standardize_strings(names):
             raise ValueError('names should be a string or list of strings') 
 
 def nd2_import(image_path):
-
-
+    
         #List of possible image names
         hoechst_possbile_names = standardize_strings(['senolysis hoechst','hoechst','kinetix single hoechst'])
         senolysis_possible_names = standardize_strings(['senolysis',' Kinetix Single band tdTomato', 'tdTomato'])
@@ -89,25 +89,6 @@ def normalize_img(img, low_per=1, high_per=99):
     return rescaled
 
 
-# def remove_well_rings(img):
-#     from skimage.filters import threshold_mean
-#     from skimage.segmentation import flood_fill
-#     from skimage.morphology import remove_small_objects
-
-#     thresh = threshold_mean(img)
-#     binary = img > thresh
-#     regions = regionprops(label(binary))
-#     # Generate inverted mask of regions falling between the low_size and min_size
-#     removal_mask = np.ones(img.shape, dtype="bool")
-#     for region in regions:
-#         if 10000 < region.area:
-#             removal_mask[tuple(region.coords.T.tolist())] = 0
-
-#     # Used to remove corners of images which sometimes remain
-#     removal_mask = remove_small_objects(removal_mask, min_size=20000)
-
-#     out = removal_mask * img
-#     return out
 
 def remove_well_rings(img,min_size=20000,max_size = 300):
     from skimage.filters import threshold_mean
@@ -130,7 +111,6 @@ def remove_well_rings(img,min_size=20000,max_size = 300):
 
 
 def remove_large_nuclei(img, max_size=7000):
-    from skimage.filters import threshold_mean
 
     thresh = threshold_mean(img)
     binary = img > thresh
@@ -145,16 +125,6 @@ def remove_large_nuclei(img, max_size=7000):
 
 
 def threshold_with_otsu(img):
-    """Segmented 2D image using Otsu Thresholding
-
-    Parameters
-    ----------
-    img : Grayscale input image
-
-    Returns
-    -------
-    thresholded : Binary (Boolean) thresholded input image
-    """
 
     thresh = threshold_otsu(img)
     thresholded = img > thresh
@@ -268,21 +238,6 @@ def create_figure(RGB, scenescent, quinescent, save_path, img_name):
     plt.close()
 
     return
-
-#Tested with Pillow, not any faster to save image...
-# def create_figure(RGB, scenescent, quinescent, save_path, img_name):
-
-#     # Plot Images
-
-#     marked = mark_boundaries(RGB, scenescent, outline_color=(1, 0, 0), mode="thick")
-#     marked = mark_boundaries(marked, quinescent, outline_color=(0, 1, 0), mode="thick")
-#     marked_uint8 = rescale_intensity(marked,out_range='uint8')
-
-#     im_to_save = Image.fromarray(marked_uint8).convert('RGB')
-#     im_to_save.save(os.path.join(save_path, img_name + ".jpeg"),quality = 95)
-
-
-#     return
 
 
 def write_csv(pandas_dataframe, directory):
