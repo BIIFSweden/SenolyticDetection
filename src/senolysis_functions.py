@@ -170,7 +170,7 @@ def threshold_with_otsu(img):
 
 def determine_nuclei_type(mask, red, green, blue):
 
-    nuclei_regions = regionprops(label(mask))
+    #nuclei_regions = regionprops(label(mask))
 
     scenescent = np.zeros(mask.shape)
     quiescent = np.zeros(mask.shape)
