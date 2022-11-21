@@ -68,6 +68,6 @@ def senolysis_analysis(img_path, program_start_time):
 
     img_name = os.path.split(img_path)[-1]
     img_name = os.path.splitext(img_name)[0]
-    create_figure(RGB, scenescent_upscaled, quiescent_upscaled, save_path, img_name)
+    create_figure(RGB, scenescent_downscaled, quiescent_downscaled, save_path, img_name)
 
     return
