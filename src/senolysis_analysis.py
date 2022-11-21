@@ -12,13 +12,13 @@ def senolysis_analysis(img_path, program_start_time):
      # downscale the images for faster computation
     downscale_factor = 4
     blue_downscaled = downscale_local_mean(
-        blue_norm, factors=(downscale_factor, downscale_factor)
+        blue, factors=(downscale_factor, downscale_factor)
     )
     green_downscaled = downscale_local_mean(
-        green_norm, factors=(downscale_factor, downscale_factor)
+        green, factors=(downscale_factor, downscale_factor)
     )
     red_downscaled = downscale_local_mean(
-        red_norm, factors=(downscale_factor, downscale_factor)
+        red, factors=(downscale_factor, downscale_factor)
     )
 
     # normalize to [0,1] for 0 to 99th percentiles
