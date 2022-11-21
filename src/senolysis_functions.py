@@ -47,7 +47,7 @@ def standardize_strings(names):
             raise ValueError('names should be a string or list of strings') 
 
 def nd2_import(image_path):
-    
+
         #List of possible image names
         hoechst_possbile_names = standardize_strings(['senolysis hoechst','hoechst','kinetix single hoechst'])
         senolysis_possible_names = standardize_strings(['senolysis',' Kinetix Single band tdTomato', 'tdTomato'])
@@ -110,18 +110,16 @@ def remove_well_rings(img,min_size=20000,max_size = 300):
     return out
 
 
-def remove_large_nuclei(img, max_size=7000):
+def remove_large_nuclei(binary, max_size=7000):
 
-    thresh = threshold_mean(img)
-    binary = img > thresh
     regions = regionprops(label(binary))
     # Generate inverted mask of regions falling between the low_size and min_size
-    removal_mask = np.ones(img.shape)
+    removal_mask = np.ones(binary.shape)
     for region in regions:
         if max_size < region.area:
             removal_mask[tuple(region.coords.T.tolist())] = 0
-    out = removal_mask * img
-    return out
+    
+    return removal_mask * binary
 
 
 def threshold_with_otsu(img):
