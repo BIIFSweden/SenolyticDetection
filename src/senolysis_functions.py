@@ -32,6 +32,9 @@ def find_images(folder_path):
         for name in files:
             if name.endswith(".nd2"):
                 image_paths.append(os.path.join(root, name))
+
+     #Sort list by aquisition time
+    image_paths = sorted(image_paths, key=lambda t: os.stat(t).st_mtime)
     return image_paths
 
 def standardize_strings(names):
@@ -136,7 +139,7 @@ def threshold_with_otsu(img):
     return thresholded
 
 
-def determine_nuclei_type(mask, red, green, blue):
+def classify_nuclei(mask, red, green):
 
     nuclei_regions = regionprops(label(mask))
 
