@@ -43,8 +43,8 @@ def senolysis_analysis(img_path, program_start_time):
     # Determine if each nuclei belongs to scenescent or quiescent cell
     scenescent_downscaled, quiescent_downscaled = classify_nuclei(
         mask=nuclei_thresholded,
-        red=red_downscaled,
-        green=green_downscaled,
+        red=red_normalized,
+        green=green_normalized,
     )
 
     # Upsample segmentation results back to orignal image size
