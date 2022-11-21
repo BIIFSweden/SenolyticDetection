@@ -57,11 +57,11 @@ def nd2_import(image_path):
             
             # Get channel names
             metadata = nd2_object.metadata
-            channels = metadata['channels']
+            channels = standardize_strings(metadata['channels'])
 
             # Return channels in correct order
             for i,channel in enumerate(channels):
-                channel = standardize_strings(channel) 
+               
                 if channel in hoechst_possbile_names:
                     ind_hoechst = i
                 elif channel.lower() in senolysis_possible_names:
@@ -89,9 +89,28 @@ def normalize_img(img, low_per=1, high_per=99):
     return rescaled
 
 
-def remove_well_rings(img):
+# def remove_well_rings(img):
+#     from skimage.filters import threshold_mean
+#     from skimage.segmentation import flood_fill
+#     from skimage.morphology import remove_small_objects
+
+#     thresh = threshold_mean(img)
+#     binary = img > thresh
+#     regions = regionprops(label(binary))
+#     # Generate inverted mask of regions falling between the low_size and min_size
+#     removal_mask = np.ones(img.shape, dtype="bool")
+#     for region in regions:
+#         if 10000 < region.area:
+#             removal_mask[tuple(region.coords.T.tolist())] = 0
+
+#     # Used to remove corners of images which sometimes remain
+#     removal_mask = remove_small_objects(removal_mask, min_size=20000)
+
+#     out = removal_mask * img
+#     return out
+
+def remove_well_rings(img,min_size=20000,max_size = 300):
     from skimage.filters import threshold_mean
-    from skimage.segmentation import flood_fill
     from skimage.morphology import remove_small_objects
 
     thresh = threshold_mean(img)
@@ -100,11 +119,11 @@ def remove_well_rings(img):
     # Generate inverted mask of regions falling between the low_size and min_size
     removal_mask = np.ones(img.shape, dtype="bool")
     for region in regions:
-        if 10000 < region.area:
+        if max_size < region.area:
             removal_mask[tuple(region.coords.T.tolist())] = 0
 
     # Used to remove corners of images which sometimes remain
-    removal_mask = remove_small_objects(removal_mask, min_size=20000)
+    removal_mask = remove_small_objects(removal_mask, min_size=min_size) #was 20000
 
     out = removal_mask * img
     return out
@@ -230,14 +249,14 @@ def create_figure(RGB, scenescent, quinescent, save_path, img_name):
     # Plot Images
     plt.figure(figsize=(5, 5))
 
-    marked = mark_boundaries(RGB, scenescent, color=(1, 1, 0), mode="thick")
-    marked = mark_boundaries(marked, quinescent, color=(1, 0, 0), mode="thick")
+    marked = mark_boundaries(RGB, scenescent, color=(0.5, 0.15, 0.25), mode="thick")
+    marked = mark_boundaries(marked, quinescent, color=(0, 0, 1), mode="thick")
     plt.imshow(marked)
 
     plt.title("Segmentation Results")
     custom_lines = [
-        Line2D([0], [0], color=(1, 1, 0), lw=2),
-        Line2D([0], [0], color=(1, 0, 0), lw=2),
+        Line2D([0], [0], color=(0.5, 0.15, 0.25), lw=2),
+        Line2D([0], [0], color=(0, 0, 1), lw=2),
     ]
 
     plt.legend(custom_lines, ["Senescent", "Quiescent"], prop={"size": 6})
