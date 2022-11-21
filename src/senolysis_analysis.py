@@ -22,14 +22,14 @@ def senolysis_analysis(img_path, program_start_time):
     )
 
     # normalize to [0,1] for 0 to 99th percentiles
-    red_norm, green_norm, blue_norm = (
+    red_normalized, green_normalized, blue_normalized = (
         normalize_img(red_downscaled, high_per=98),
         normalize_img(green_downscaled, high_per=98),
         normalize_img(blue_downscaled, high_per=98),
     )
    
     # Smooth the blue channel for nuclei segmentation
-    blue_smoothed = gaussian(blue_norm, 1)  # smooth image
+    blue_smoothed = gaussian(blue_normalized, 1)  # smooth image
 
     # remove the well ring from the blue channel
     blue_no_well_ring = remove_well_rings(blue_smoothed)
@@ -64,7 +64,7 @@ def senolysis_analysis(img_path, program_start_time):
 
     saveExcel(results_dataframe, os.path.join(save_path, "Senolysis_measures.xlsx"))
 
-    RGB = np.dstack([red_norm,green_norm,blue_norm])
+    RGB = np.dstack([red_normalized,green_normalized,blue_normalized])
 
     img_name = os.path.split(img_path)[-1]
     img_name = os.path.splitext(img_name)[0]
