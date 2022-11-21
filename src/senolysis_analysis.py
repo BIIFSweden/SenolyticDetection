@@ -46,11 +46,10 @@ def senolysis_analysis(img_path, program_start_time):
     )
 
     # Determine if each nuclei belongs to scenescent or quiescent cell
-    scenescent_downscaled, quiescent_downscaled = determine_nuclei_type(
+    scenescent_downscaled, quiescent_downscaled = classify_nuclei(
         mask=nuclei_thresholded,
         red=red_downscaled,
         green=green_downscaled,
-        blue=blue_downscaled,
     )
 
     # Upsample segmentation results back to orignal image size
@@ -72,11 +71,8 @@ def senolysis_analysis(img_path, program_start_time):
     if os.path.exists(save_path) is False:
         os.mkdir(save_path)
 
-    #write_csv(results_dataframe, os.path.join(save_path, "Senolysis_measures.csv"))
-
     saveExcel(results_dataframe, os.path.join(save_path, "Senolysis_measures.xlsx"))
 
-    #RGB = np.dstack([normalize_img(red,99), normalize_img(green,99), normalize_img(blue,99)])
     RGB = np.dstack([red_norm,green_norm,blue_norm])
 
     img_name = os.path.split(img_path)[-1]

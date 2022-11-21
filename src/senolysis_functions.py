@@ -10,6 +10,7 @@ from matplotlib.lines import Line2D
 import warnings
 from skimage.filters import threshold_mean
 from skimage.morphology import remove_small_objects
+from skimage.exposure import rescale_intensity
 
 def find_images(folder_path):
     """Finds the paths of all .nd2 images within specified path. Normalizes
@@ -82,8 +83,6 @@ def nd2_import(image_path):
 
 
 def normalize_img(img, low_per=1, high_per=99):
-    from skimage.exposure import rescale_intensity
-
     low = np.percentile(img, low_per)
     high = np.percentile(img, high_per)
     rescaled = rescale_intensity(img, in_range=(low, high), out_range=(0, 1))
@@ -113,7 +112,7 @@ def remove_well_rings(img,min_size=20000,max_size = 300):
 def remove_large_nuclei(binary, max_size=7000):
 
     regions = regionprops(label(binary))
-    # Generate inverted mask of regions falling between the low_size and min_size
+
     removal_mask = np.ones(binary.shape)
     for region in regions:
         if max_size < region.area:
@@ -128,7 +127,7 @@ def threshold_with_otsu(img):
     thresholded = img > thresh
 
     # Zero out thresholding if over 50,000 nuclei detected
-    # Done as if no nuclei present, otsu will background noise
+    # Done as if no nuclei present, otsu will theshold noise
     labelled = label(thresholded)
     if np.amax(labelled) > 50000:
         thresholded = np.zeros(thresholded.shape)
@@ -217,13 +216,13 @@ def create_figure(RGB, scenescent, quinescent, save_path, img_name):
     # Plot Images
     plt.figure(figsize=(5, 5))
 
-    marked = mark_boundaries(RGB, scenescent, color=(0.5, 0.15, 0.25), mode="thick")
+    marked = mark_boundaries(RGB, scenescent, color=(1, 1, 1), mode="thick")
     marked = mark_boundaries(marked, quinescent, color=(0, 0, 1), mode="thick")
     plt.imshow(marked)
 
     plt.title("Segmentation Results")
     custom_lines = [
-        Line2D([0], [0], color=(0.5, 0.15, 0.25), lw=2),
+        Line2D([0], [0], color=(1, 1, 1), lw=2),
         Line2D([0], [0], color=(0, 0, 1), lw=2),
     ]
 
