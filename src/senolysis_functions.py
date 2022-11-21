@@ -170,7 +170,7 @@ def threshold_with_otsu(img):
 
 def determine_nuclei_type(mask, red, green, blue):
 
-    #nuclei_regions = regionprops(label(mask))
+    nuclei_regions = regionprops(label(mask))
 
     scenescent = np.zeros(mask.shape)
     quiescent = np.zeros(mask.shape)
@@ -178,9 +178,9 @@ def determine_nuclei_type(mask, red, green, blue):
         nuclei_coordinates = nuclei.coords
         red_value = np.mean(red[tuple(nuclei_coordinates.T)])
         green_value = np.mean(green[tuple(nuclei_coordinates.T)])
-        blue_value = np.mean(blue[tuple(nuclei_coordinates.T)])
+        #blue_value = np.mean(blue[tuple(nuclei_coordinates.T)])
 
-        if red_value > green_value or red_value > blue_value:
+        if red_value > green_value:
             scenescent[tuple(nuclei_coordinates.T)] = 1
         else:
             quiescent[tuple(nuclei_coordinates.T)] = 1
