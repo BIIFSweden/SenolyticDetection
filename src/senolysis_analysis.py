@@ -9,14 +9,7 @@ def senolysis_analysis(img_path, program_start_time):
 
     red, green, blue = nd2_import(img_path)
 
-    # normalize to [0,1] for 0 to 99th percentiles
-    red_norm, green_norm, blue_norm = (
-        normalize_img(red, high_per=98),
-        normalize_img(green, high_per=98),
-        normalize_img(blue, high_per=98),
-    )
-
-    # downscale the images for faster computation
+     # downscale the images for faster computation
     downscale_factor = 4
     blue_downscaled = downscale_local_mean(
         blue_norm, factors=(downscale_factor, downscale_factor)
@@ -28,8 +21,15 @@ def senolysis_analysis(img_path, program_start_time):
         red_norm, factors=(downscale_factor, downscale_factor)
     )
 
+    # normalize to [0,1] for 0 to 99th percentiles
+    red_norm, green_norm, blue_norm = (
+        normalize_img(red_downscaled, high_per=98),
+        normalize_img(green_downscaled, high_per=98),
+        normalize_img(blue_downscaled, high_per=98),
+    )
+   
     # Smooth the blue channel for nuclei segmentation
-    blue_smoothed = gaussian(blue_downscaled, 1)  # smooth image
+    blue_smoothed = gaussian(blue_norm, 1)  # smooth image
 
     # remove the well ring from the blue channel
     blue_no_well_ring = remove_well_rings(blue_smoothed)
