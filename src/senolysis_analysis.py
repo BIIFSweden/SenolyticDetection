@@ -1,7 +1,7 @@
 from skimage.transform import downscale_local_mean
 from skimage.filters import gaussian
 from senolysis_functions import *
-from skimage.morphology import binary_opening, remove_small_holes, disk,remove_small_objects
+from skimage.morphology import remove_small_objects
 from skimage.transform import resize
 
 
@@ -38,7 +38,7 @@ def senolysis_analysis(img_path, program_start_time):
 
     # Segment nuclei in blue channel and remove small objects
     nuclei_thresholded = threshold_with_otsu(blue_no_well_ring)
-    nuclei_thresholded = remove_small_objects(nuclei_thresholded,min_size=50)
+    nuclei_thresholded = remove_small_objects(nuclei_thresholded,min_size=5)
 
     # Determine if each nuclei belongs to scenescent or quiescent cell
     scenescent_downscaled, quiescent_downscaled = classify_nuclei(
