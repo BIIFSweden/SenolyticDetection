@@ -9,6 +9,7 @@ from skimage.segmentation import mark_boundaries
 from matplotlib.lines import Line2D
 import warnings
 from skimage.filters import threshold_mean
+from skimage.morphology import remove_small_objects
 
 def find_images(folder_path):
     """Finds the paths of all .nd2 images within specified path. Normalizes
@@ -91,8 +92,7 @@ def normalize_img(img, low_per=1, high_per=99):
 
 
 def remove_well_rings(img,min_size=20000,max_size = 300):
-    from skimage.filters import threshold_mean
-    from skimage.morphology import remove_small_objects
+
 
     thresh = threshold_mean(img)
     binary = img > thresh
@@ -132,6 +132,7 @@ def threshold_with_otsu(img):
     labelled = label(thresholded)
     if np.amax(labelled) > 50000:
         thresholded = np.zeros(thresholded.shape)
+        warnings.warn('No nuclei detected.')
 
     return thresholded
 
@@ -146,7 +147,6 @@ def determine_nuclei_type(mask, red, green, blue):
         nuclei_coordinates = nuclei.coords
         red_value = np.mean(red[tuple(nuclei_coordinates.T)])
         green_value = np.mean(green[tuple(nuclei_coordinates.T)])
-        #blue_value = np.mean(blue[tuple(nuclei_coordinates.T)])
 
         if red_value > green_value:
             scenescent[tuple(nuclei_coordinates.T)] = 1
