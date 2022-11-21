@@ -36,14 +36,9 @@ def senolysis_analysis(img_path, program_start_time):
 
     nuclei_thresholded = threshold_with_otsu(blue_no_well_ring)
 
-    # Segment nuclei in blue channel and clean up results
+    # Segment nuclei in blue channel and remove small objects
     nuclei_thresholded = threshold_with_otsu(blue_no_well_ring)
-    disk_factor = int(5 / downscale_factor)
-    nuclei_thresholded = binary_opening(nuclei_thresholded, footprint=disk(disk_factor))
-    nuclei_thresholded = remove_small_holes(nuclei_thresholded, area_threshold=500)
-    nuclei_thresholded = remove_large_nuclei(
-        nuclei_thresholded, max_size=int(7000 / downscale_factor**2)
-    )
+    nuclei_thresholded = remove_small_objects(nuclei_thresholded,min_size=50)
 
     # Determine if each nuclei belongs to scenescent or quiescent cell
     scenescent_downscaled, quiescent_downscaled = classify_nuclei(
@@ -55,10 +50,6 @@ def senolysis_analysis(img_path, program_start_time):
     # Upsample segmentation results back to orignal image size
     scenescent_upscaled = resize(scenescent_downscaled, output_shape=red.shape)
     quiescent_upscaled = resize(quiescent_downscaled, output_shape=green.shape)
-
-    #Remove any nuclei smaller than 150 pixels
-    scenescent_upscaled = remove_small_objects(scenescent_upscaled,min_size=150)
-    quiescent_upscaled = remove_small_objects(quiescent_upscaled,min_size=150)
 
     # Measures counts and nuclei mean size + std
     results_dataframe = analyze_nuclei(
