@@ -21,7 +21,7 @@ def senolysis_analysis(img_path, program_start_time):
         red, factors=(downscale_factor, downscale_factor)
     )
 
-    # normalize to [0,1] for 0 to 99th percentiles
+    # normalize to [0,1] for 0 to 98th percentiles
     red_normalized, green_normalized, blue_normalized = (
         normalize_img(red_downscaled, high_per=98),
         normalize_img(green_downscaled, high_per=98),
@@ -36,11 +36,14 @@ def senolysis_analysis(img_path, program_start_time):
 
     nuclei_thresholded = threshold_with_otsu(blue_no_well_ring)
 
-    # Segment nuclei in blue channel and remove small objects
+    # Segment nuclei in blue channel and small and large objects
     nuclei_thresholded = threshold_with_otsu(blue_no_well_ring)
     nuclei_thresholded = remove_small_objects(nuclei_thresholded,min_size=5)
+    nuclei_thresholded = remove_large_nuclei(nuclei_thresholded,max_size=700)
 
     # Determine if each nuclei belongs to scenescent or quiescent cell
+    # using normalied intensities to reduce normalize emission intensity
+    # between different channels.
     scenescent_downscaled, quiescent_downscaled = classify_nuclei(
         mask=nuclei_thresholded,
         red=red_normalized,
