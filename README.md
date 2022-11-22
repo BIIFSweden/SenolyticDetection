@@ -1,8 +1,10 @@
 # Federico-Pietrocola2022-3
 
 <p align="center">
-<img width="330" alt="Screenshot 2022-06-16 at 14 58 15" src="https://user-images.githubusercontent.com/43760657/174074881-ed73abe6-9f27-4cf0-bfc1-7f0183d9a64a.png">
+<img width="700" alt="Screenshot 2022-11-22 at 12 14 22" src="https://user-images.githubusercontent.com/43760657/203300414-90941d88-ce7f-4729-a97e-73b2bc896896.png">
 </p>
+
+
 
 This python script is used for high-throughput analysis of senescence and quiescence cells. Thresholding is used to segment the blue channel, which marks the nuclei of the cells.
 
