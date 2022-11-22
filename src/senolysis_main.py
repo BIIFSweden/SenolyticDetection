@@ -23,7 +23,7 @@ def main():
     # Use parallel processing for larger image set, save 2 cpus for background work...
     
     
-    assert gui.num_jobs > 0 and gui.num_jobs <=os.cpu_count(), f'Number of jobs must integer value be between 1 and {os.cpu_count()}'
+    assert gui.num_jobs > 0 and gui.num_jobs <=os.cpu_count(), f'Number of jobs shoulder be integer value be between 1 and {os.cpu_count()}'
     print(f"Analyzing {gui.num_jobs} images in parallel")
 
     # Parallelize image analsyis with progress bar
