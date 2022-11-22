@@ -8,6 +8,7 @@ from tqdm import tqdm
 from time import sleep
 from gui_senolysis import *
 
+
 def main():
 
     gui = GUI()
@@ -18,23 +19,22 @@ def main():
     img_paths = find_images(gui.directory)
 
     num_images = len(img_paths)
-    print(f'Total number of images to analyze: {num_images}')
+    print(f"Total number of images to analyze: {num_images}")
 
-    # Use parallel processing for larger image set, save 2 cpus for background work...
-    
-    
-    assert gui.num_jobs > 0 and gui.num_jobs <=os.cpu_count(), f'Number of jobs must integer value be between 1 and {os.cpu_count()}'
+    assert (
+        gui.num_jobs > 0 and gui.num_jobs <= os.cpu_count()
+    ), f"Number of jobs shoulder be integer value be between 1 and {os.cpu_count()}"
     print(f"Analyzing {gui.num_jobs} images in parallel")
 
     # Parallelize image analsyis with progress bar
-    if gui.num_jobs>1:
+    if gui.num_jobs > 1:
         with tqdm_joblib(tqdm(desc="Progress", total=len(img_paths))) as progress_bar:
             Parallel(n_jobs=gui.num_jobs)(
                 delayed(senolysis_analysis)(img_path, program_start_time)
                 for img_path in img_paths
             )
 
-    elif gui.num_jobs==1:
+    elif gui.num_jobs == 1:
         print(f"Number of jobs = 1, processing images in series.")
         [
             senolysis_analysis(img_path, program_start_time)
@@ -43,6 +43,7 @@ def main():
 
     print(f"Finished Analysis")
     return None
+
 
 if __name__ == "__main__":
     main()

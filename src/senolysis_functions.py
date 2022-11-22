@@ -8,6 +8,11 @@ import pandas as pd
 from skimage.segmentation import mark_boundaries
 from matplotlib.lines import Line2D
 import warnings
+from skimage.filters import threshold_mean
+from skimage.exposure import rescale_intensity
+from skimage.morphology import binary_dilation, disk
+from skimage.segmentation import flood_fill
+
 
 def find_images(folder_path):
     """Finds the paths of all .nd2 images within specified path. Normalizes
@@ -29,146 +34,132 @@ def find_images(folder_path):
         for name in files:
             if name.endswith(".nd2"):
                 image_paths.append(os.path.join(root, name))
+
+    # Sort list by aquisition time
+    image_paths = sorted(image_paths, key=lambda t: os.stat(t).st_mtime)
     return image_paths
 
+
 def standardize_strings(names):
-        '''makes string or list of strings lowercase and removes extra spaces.
-        '''
-        if isinstance(names,list):
-            names = [" ".join(x.strip().split()) for x in names]
-            names = [x.lower() for x in names]
-            return names
-        elif isinstance(names,str):
-            names = " ".join(names.strip().split())
-            names = names.lower()
-            return names
-        else:
-            raise ValueError('names should be a string or list of strings') 
+    """makes string or list of strings lowercase and removes extra spaces."""
+    if isinstance(names, list):
+        names = [" ".join(x.strip().split()) for x in names]
+        names = [x.lower() for x in names]
+        return names
+    elif isinstance(names, str):
+        names = " ".join(names.strip().split())
+        names = names.lower()
+        return names
+    else:
+        raise ValueError("names should be a string or list of strings")
+
 
 def nd2_import(image_path):
 
+    # List of possible image names
+    hoechst_possbile_names = standardize_strings(
+        ["senolysis hoechst", "hoechst", "kinetix single hoechst"]
+    )
+    senolysis_possible_names = standardize_strings(
+        ["senolysis", " Kinetix Single band tdTomato", "tdTomato"]
+    )
+    EGFP_possible_namess = standardize_strings(
+        ["senolysis egfp", " Kinetix Single band senolysis  EGFP1", "egfp1", "egfp"]
+    )
 
-        #List of possible image names
-        hoechst_possbile_names = standardize_strings(['senolysis hoechst','hoechst','kinetix single hoechst'])
-        senolysis_possible_names = standardize_strings(['senolysis',' Kinetix Single band tdTomato', 'tdTomato'])
-        EGFP_possible_namess = standardize_strings(['senolysis egfp',' Kinetix Single band senolysis  EGFP1', 'egfp1','egfp'])
+    with ND2Reader(image_path) as nd2_object:
 
-        with ND2Reader(image_path) as nd2_object:
-            
-            # Get channel names
-            metadata = nd2_object.metadata
-            channels = standardize_strings(metadata['channels'])
+        # Get channel names
+        metadata = nd2_object.metadata
+        channels = standardize_strings(metadata["channels"])
 
-            # Return channels in correct order
-            for i,channel in enumerate(channels):
-               
-                if channel in hoechst_possbile_names:
-                    ind_hoechst = i
-                elif channel.lower() in senolysis_possible_names:
-                    ind_senolysis = i
-                elif channel.lower() in EGFP_possible_namess:
-                    ind_EGFP = i
-                else:
-                    ind_senolysis = 0
-                    ind_EGFP = 1
-                    ind_hoechst = 2
+        # Return channels in correct order
+        for i, channel in enumerate(channels):
 
-                    warnings.warn('''Naming of .nd2 channels cannot be resolved. Assuming the 
+            if channel in hoechst_possbile_names:
+                ind_hoechst = i
+            elif channel.lower() in senolysis_possible_names:
+                ind_senolysis = i
+            elif channel.lower() in EGFP_possible_namess:
+                ind_EGFP = i
+            else:
+                ind_senolysis = 0
+                ind_EGFP = 1
+                ind_hoechst = 2
+
+                warnings.warn(
+                    """Naming of .nd2 channels cannot be resolved. Assuming the
                                     channel order is Senescent, Quiescent then Nuclei stain.
-                    ''')
-                                   
-            return nd2_object[ind_senolysis], nd2_object[ind_EGFP], nd2_object[ind_hoechst]
+                    """
+                )
+
+        return nd2_object[ind_senolysis], nd2_object[ind_EGFP], nd2_object[ind_hoechst]
 
 
 def normalize_img(img, low_per=1, high_per=99):
-    from skimage.exposure import rescale_intensity
-
     low = np.percentile(img, low_per)
     high = np.percentile(img, high_per)
     rescaled = rescale_intensity(img, in_range=(low, high), out_range=(0, 1))
     return rescaled
 
 
-# def remove_well_rings(img):
-#     from skimage.filters import threshold_mean
-#     from skimage.segmentation import flood_fill
-#     from skimage.morphology import remove_small_objects
-
-#     thresh = threshold_mean(img)
-#     binary = img > thresh
-#     regions = regionprops(label(binary))
-#     # Generate inverted mask of regions falling between the low_size and min_size
-#     removal_mask = np.ones(img.shape, dtype="bool")
-#     for region in regions:
-#         if 10000 < region.area:
-#             removal_mask[tuple(region.coords.T.tolist())] = 0
-
-#     # Used to remove corners of images which sometimes remain
-#     removal_mask = remove_small_objects(removal_mask, min_size=20000)
-
-#     out = removal_mask * img
-#     return out
-
-def remove_well_rings(img,min_size=20000,max_size = 300):
-    from skimage.filters import threshold_mean
-    from skimage.morphology import remove_small_objects
+def remove_well_rings(img, max_size=300):
 
     thresh = threshold_mean(img)
     binary = img > thresh
     regions = regionprops(label(binary))
     # Generate inverted mask of regions falling between the low_size and min_size
-    removal_mask = np.ones(img.shape, dtype="bool")
+    removal_mask = np.zeros(img.shape, dtype="bool")
     for region in regions:
         if max_size < region.area:
-            removal_mask[tuple(region.coords.T.tolist())] = 0
+            removal_mask[tuple(region.coords.T.tolist())] = 1
 
-    # Used to remove corners of images which sometimes remain
-    removal_mask = remove_small_objects(removal_mask, min_size=min_size) #was 20000
+    # Dilate slightly to ensure well-edge is completely removed
+    removal_mask = binary_dilation(removal_mask, disk(15))
+
+    # fill corners of image (Outside of well)
+    removal_mask = flood_fill(removal_mask, (0, 0), 1)
+    removal_mask = flood_fill(removal_mask, (-1, 0), 1)
+    removal_mask = flood_fill(removal_mask, (0, -1), 1)
+    removal_mask = flood_fill(removal_mask, (-1, -1), 1)
+
+    # check that mask i
+
+    # invert mask
+    removal_mask = np.abs(removal_mask - 1)
 
     out = removal_mask * img
     return out
 
 
-def remove_large_nuclei(img, max_size=7000):
-    from skimage.filters import threshold_mean
+def remove_large_nuclei(binary, max_size=7000):
 
-    thresh = threshold_mean(img)
-    binary = img > thresh
     regions = regionprops(label(binary))
-    # Generate inverted mask of regions falling between the low_size and min_size
-    removal_mask = np.ones(img.shape)
+
+    removal_mask = np.ones(binary.shape)
     for region in regions:
         if max_size < region.area:
             removal_mask[tuple(region.coords.T.tolist())] = 0
-    out = removal_mask * img
-    return out
+
+    return removal_mask * binary
 
 
 def threshold_with_otsu(img):
-    """Segmented 2D image using Otsu Thresholding
-
-    Parameters
-    ----------
-    img : Grayscale input image
-
-    Returns
-    -------
-    thresholded : Binary (Boolean) thresholded input image
-    """
 
     thresh = threshold_otsu(img)
     thresholded = img > thresh
 
     # Zero out thresholding if over 50,000 nuclei detected
-    # Done as if no nuclei present, otsu will background noise
+    # Done as if no nuclei present, otsu will theshold noise
     labelled = label(thresholded)
     if np.amax(labelled) > 50000:
         thresholded = np.zeros(thresholded.shape)
+        warnings.warn("No nuclei detected.")
 
     return thresholded
 
 
-def determine_nuclei_type(mask, red, green, blue):
+def classify_nuclei(mask, red, green):
 
     nuclei_regions = regionprops(label(mask))
 
@@ -178,9 +169,8 @@ def determine_nuclei_type(mask, red, green, blue):
         nuclei_coordinates = nuclei.coords
         red_value = np.mean(red[tuple(nuclei_coordinates.T)])
         green_value = np.mean(green[tuple(nuclei_coordinates.T)])
-        blue_value = np.mean(blue[tuple(nuclei_coordinates.T)])
 
-        if red_value > green_value or red_value > blue_value:
+        if red_value > green_value:
             scenescent[tuple(nuclei_coordinates.T)] = 1
         else:
             quiescent[tuple(nuclei_coordinates.T)] = 1
@@ -243,19 +233,20 @@ def analyze_nuclei(scenescent_mask, quiescent_mask, img_path):
 
     return storage_df
 
-#Uses matlplotlib to save image, pretty but very slow
+
+# Uses matlplotlib to save image, pretty but very slow
 def create_figure(RGB, scenescent, quinescent, save_path, img_name):
 
     # Plot Images
     plt.figure(figsize=(5, 5))
 
-    marked = mark_boundaries(RGB, scenescent, color=(0.5, 0.15, 0.25), mode="thick")
+    marked = mark_boundaries(RGB, scenescent, color=(1, 1, 1), mode="thick")
     marked = mark_boundaries(marked, quinescent, color=(0, 0, 1), mode="thick")
     plt.imshow(marked)
 
     plt.title("Segmentation Results")
     custom_lines = [
-        Line2D([0], [0], color=(0.5, 0.15, 0.25), lw=2),
+        Line2D([0], [0], color=(1, 1, 1), lw=2),
         Line2D([0], [0], color=(0, 0, 1), lw=2),
     ]
 
@@ -269,21 +260,6 @@ def create_figure(RGB, scenescent, quinescent, save_path, img_name):
 
     return
 
-#Tested with Pillow, not any faster to save image...
-# def create_figure(RGB, scenescent, quinescent, save_path, img_name):
-
-#     # Plot Images
-
-#     marked = mark_boundaries(RGB, scenescent, outline_color=(1, 0, 0), mode="thick")
-#     marked = mark_boundaries(marked, quinescent, outline_color=(0, 1, 0), mode="thick")
-#     marked_uint8 = rescale_intensity(marked,out_range='uint8')
-
-#     im_to_save = Image.fromarray(marked_uint8).convert('RGB')
-#     im_to_save.save(os.path.join(save_path, img_name + ".jpeg"),quality = 95)
-
-
-#     return
-
 
 def write_csv(pandas_dataframe, directory):
     # Writes the CSV file of  pandas dataframe to specified directory
@@ -296,11 +272,14 @@ def write_csv(pandas_dataframe, directory):
         new_file.to_csv(directory, header=True, index=False)
     return
 
-def saveExcel(pandas_dataframe,directory):
+
+def saveExcel(pandas_dataframe, directory):
 
     if os.path.exists(directory):
         existing_excel = pd.read_excel(directory)
-        new_excel = pd.concat([existing_excel, pandas_dataframe], axis=0, ignore_index=True)
+        new_excel = pd.concat(
+            [existing_excel, pandas_dataframe], axis=0, ignore_index=True
+        )
         new_excel.to_excel(directory, index=False)
 
     else:
