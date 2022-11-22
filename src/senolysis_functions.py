@@ -93,7 +93,6 @@ def normalize_img(img, low_per=1, high_per=99):
     return rescaled
 
 
-
 def remove_well_rings(img,max_size = 300):
 
         thresh = threshold_mean(img)
