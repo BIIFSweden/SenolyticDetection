@@ -9,8 +9,9 @@ from skimage.segmentation import mark_boundaries
 from matplotlib.lines import Line2D
 import warnings
 from skimage.filters import threshold_mean
-from skimage.morphology import remove_small_objects
 from skimage.exposure import rescale_intensity
+from skimage.morphology import binary_dilation,disk
+from skimage.segmentation import flood_fill
 
 def find_images(folder_path):
     """Finds the paths of all .nd2 images within specified path. Normalizes
@@ -93,23 +94,33 @@ def normalize_img(img, low_per=1, high_per=99):
 
 
 
-def remove_well_rings(img,min_size=20000,max_size = 300):
+def remove_well_rings(img,max_size = 300):
 
+        thresh = threshold_mean(img)
+        binary = img > thresh
+        regions = regionprops(label(binary))
+        # Generate inverted mask of regions falling between the low_size and min_size
+        removal_mask = np.zeros(img.shape, dtype="bool")
+        for region in regions:
+            if max_size < region.area:
+                removal_mask[tuple(region.coords.T.tolist())] = 1
 
-    thresh = threshold_mean(img)
-    binary = img > thresh
-    regions = regionprops(label(binary))
-    # Generate inverted mask of regions falling between the low_size and min_size
-    removal_mask = np.ones(img.shape, dtype="bool")
-    for region in regions:
-        if max_size < region.area:
-            removal_mask[tuple(region.coords.T.tolist())] = 0
+        #Dilate slightly to ensure well-edge is completely removed
+        removal_mask = binary_dilation(removal_mask,disk(15))
 
-    # Used to remove corners of images which sometimes remain
-    removal_mask = remove_small_objects(removal_mask, min_size=min_size) #was 20000
+        #fill corners of image (Outside of well)
+        removal_mask = flood_fill(removal_mask, (0, 0), 1)
+        removal_mask = flood_fill(removal_mask, (-1, 0), 1)
+        removal_mask = flood_fill(removal_mask, (0, -1), 1)
+        removal_mask = flood_fill(removal_mask, (-1, -1), 1)
 
-    out = removal_mask * img
-    return out
+        #check that mask i
+
+        #invert mask
+        removal_mask = np.abs(removal_mask-1)
+
+        out = removal_mask * img
+        return out
 
 
 def remove_large_nuclei(binary, max_size=7000):
