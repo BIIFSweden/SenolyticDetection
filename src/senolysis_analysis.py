@@ -9,7 +9,7 @@ def senolysis_analysis(img_path, program_start_time):
 
     red, green, blue = nd2_import(img_path)
 
-     # downscale the images for faster computation
+    # downscale the images for faster computation
     downscale_factor = 4
     blue_downscaled = downscale_local_mean(
         blue, factors=(downscale_factor, downscale_factor)
@@ -27,7 +27,7 @@ def senolysis_analysis(img_path, program_start_time):
         normalize_img(green_downscaled, high_per=98),
         normalize_img(blue_downscaled, high_per=98),
     )
-   
+
     # Smooth the blue channel for nuclei segmentation
     blue_smoothed = gaussian(blue_normalized, 1)  # smooth image
 
@@ -38,8 +38,8 @@ def senolysis_analysis(img_path, program_start_time):
 
     # Segment nuclei in blue channel and small and large objects
     nuclei_thresholded = threshold_with_otsu(blue_no_well_ring)
-    nuclei_thresholded = remove_small_objects(nuclei_thresholded,min_size=5)
-    nuclei_thresholded = remove_large_nuclei(nuclei_thresholded,max_size=700)
+    nuclei_thresholded = remove_small_objects(nuclei_thresholded, min_size=5)
+    nuclei_thresholded = remove_large_nuclei(nuclei_thresholded, max_size=700)
 
     # Determine if each nuclei belongs to scenescent or quiescent cell
     # using normalied intensities to reduce normalize emission intensity
@@ -67,7 +67,7 @@ def senolysis_analysis(img_path, program_start_time):
 
     saveExcel(results_dataframe, os.path.join(save_path, "Senolysis_measures.xlsx"))
 
-    RGB = np.dstack([red_normalized,green_normalized,blue_normalized])
+    RGB = np.dstack([red_normalized, green_normalized, blue_normalized])
 
     img_name = os.path.split(img_path)[-1]
     img_name = os.path.splitext(img_name)[0]

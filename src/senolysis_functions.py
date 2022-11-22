@@ -10,8 +10,9 @@ from matplotlib.lines import Line2D
 import warnings
 from skimage.filters import threshold_mean
 from skimage.exposure import rescale_intensity
-from skimage.morphology import binary_dilation,disk
+from skimage.morphology import binary_dilation, disk
 from skimage.segmentation import flood_fill
+
 
 def find_images(folder_path):
     """Finds the paths of all .nd2 images within specified path. Normalizes
@@ -34,56 +35,65 @@ def find_images(folder_path):
             if name.endswith(".nd2"):
                 image_paths.append(os.path.join(root, name))
 
-     #Sort list by aquisition time
+    # Sort list by aquisition time
     image_paths = sorted(image_paths, key=lambda t: os.stat(t).st_mtime)
     return image_paths
 
+
 def standardize_strings(names):
-        '''makes string or list of strings lowercase and removes extra spaces.
-        '''
-        if isinstance(names,list):
-            names = [" ".join(x.strip().split()) for x in names]
-            names = [x.lower() for x in names]
-            return names
-        elif isinstance(names,str):
-            names = " ".join(names.strip().split())
-            names = names.lower()
-            return names
-        else:
-            raise ValueError('names should be a string or list of strings') 
+    """makes string or list of strings lowercase and removes extra spaces."""
+    if isinstance(names, list):
+        names = [" ".join(x.strip().split()) for x in names]
+        names = [x.lower() for x in names]
+        return names
+    elif isinstance(names, str):
+        names = " ".join(names.strip().split())
+        names = names.lower()
+        return names
+    else:
+        raise ValueError("names should be a string or list of strings")
+
 
 def nd2_import(image_path):
 
-        #List of possible image names
-        hoechst_possbile_names = standardize_strings(['senolysis hoechst','hoechst','kinetix single hoechst'])
-        senolysis_possible_names = standardize_strings(['senolysis',' Kinetix Single band tdTomato', 'tdTomato'])
-        EGFP_possible_namess = standardize_strings(['senolysis egfp',' Kinetix Single band senolysis  EGFP1', 'egfp1','egfp'])
+    # List of possible image names
+    hoechst_possbile_names = standardize_strings(
+        ["senolysis hoechst", "hoechst", "kinetix single hoechst"]
+    )
+    senolysis_possible_names = standardize_strings(
+        ["senolysis", " Kinetix Single band tdTomato", "tdTomato"]
+    )
+    EGFP_possible_namess = standardize_strings(
+        ["senolysis egfp", " Kinetix Single band senolysis  EGFP1", "egfp1", "egfp"]
+    )
 
-        with ND2Reader(image_path) as nd2_object:
-            
-            # Get channel names
-            metadata = nd2_object.metadata
-            channels = standardize_strings(metadata['channels'])
+    with ND2Reader(image_path) as nd2_object:
 
-            # Return channels in correct order
-            for i,channel in enumerate(channels):
-               
-                if channel in hoechst_possbile_names:
-                    ind_hoechst = i
-                elif channel.lower() in senolysis_possible_names:
-                    ind_senolysis = i
-                elif channel.lower() in EGFP_possible_namess:
-                    ind_EGFP = i
-                else:
-                    ind_senolysis = 0
-                    ind_EGFP = 1
-                    ind_hoechst = 2
+        # Get channel names
+        metadata = nd2_object.metadata
+        channels = standardize_strings(metadata["channels"])
 
-                    warnings.warn('''Naming of .nd2 channels cannot be resolved. Assuming the 
+        # Return channels in correct order
+        for i, channel in enumerate(channels):
+
+            if channel in hoechst_possbile_names:
+                ind_hoechst = i
+            elif channel.lower() in senolysis_possible_names:
+                ind_senolysis = i
+            elif channel.lower() in EGFP_possible_namess:
+                ind_EGFP = i
+            else:
+                ind_senolysis = 0
+                ind_EGFP = 1
+                ind_hoechst = 2
+
+                warnings.warn(
+                    """Naming of .nd2 channels cannot be resolved. Assuming the
                                     channel order is Senescent, Quiescent then Nuclei stain.
-                    ''')
-                                   
-            return nd2_object[ind_senolysis], nd2_object[ind_EGFP], nd2_object[ind_hoechst]
+                    """
+                )
+
+        return nd2_object[ind_senolysis], nd2_object[ind_EGFP], nd2_object[ind_hoechst]
 
 
 def normalize_img(img, low_per=1, high_per=99):
@@ -93,33 +103,33 @@ def normalize_img(img, low_per=1, high_per=99):
     return rescaled
 
 
-def remove_well_rings(img,max_size = 300):
+def remove_well_rings(img, max_size=300):
 
-        thresh = threshold_mean(img)
-        binary = img > thresh
-        regions = regionprops(label(binary))
-        # Generate inverted mask of regions falling between the low_size and min_size
-        removal_mask = np.zeros(img.shape, dtype="bool")
-        for region in regions:
-            if max_size < region.area:
-                removal_mask[tuple(region.coords.T.tolist())] = 1
+    thresh = threshold_mean(img)
+    binary = img > thresh
+    regions = regionprops(label(binary))
+    # Generate inverted mask of regions falling between the low_size and min_size
+    removal_mask = np.zeros(img.shape, dtype="bool")
+    for region in regions:
+        if max_size < region.area:
+            removal_mask[tuple(region.coords.T.tolist())] = 1
 
-        #Dilate slightly to ensure well-edge is completely removed
-        removal_mask = binary_dilation(removal_mask,disk(15))
+    # Dilate slightly to ensure well-edge is completely removed
+    removal_mask = binary_dilation(removal_mask, disk(15))
 
-        #fill corners of image (Outside of well)
-        removal_mask = flood_fill(removal_mask, (0, 0), 1)
-        removal_mask = flood_fill(removal_mask, (-1, 0), 1)
-        removal_mask = flood_fill(removal_mask, (0, -1), 1)
-        removal_mask = flood_fill(removal_mask, (-1, -1), 1)
+    # fill corners of image (Outside of well)
+    removal_mask = flood_fill(removal_mask, (0, 0), 1)
+    removal_mask = flood_fill(removal_mask, (-1, 0), 1)
+    removal_mask = flood_fill(removal_mask, (0, -1), 1)
+    removal_mask = flood_fill(removal_mask, (-1, -1), 1)
 
-        #check that mask i
+    # check that mask i
 
-        #invert mask
-        removal_mask = np.abs(removal_mask-1)
+    # invert mask
+    removal_mask = np.abs(removal_mask - 1)
 
-        out = removal_mask * img
-        return out
+    out = removal_mask * img
+    return out
 
 
 def remove_large_nuclei(binary, max_size=7000):
@@ -130,7 +140,7 @@ def remove_large_nuclei(binary, max_size=7000):
     for region in regions:
         if max_size < region.area:
             removal_mask[tuple(region.coords.T.tolist())] = 0
-    
+
     return removal_mask * binary
 
 
@@ -144,7 +154,7 @@ def threshold_with_otsu(img):
     labelled = label(thresholded)
     if np.amax(labelled) > 50000:
         thresholded = np.zeros(thresholded.shape)
-        warnings.warn('No nuclei detected.')
+        warnings.warn("No nuclei detected.")
 
     return thresholded
 
@@ -223,7 +233,8 @@ def analyze_nuclei(scenescent_mask, quiescent_mask, img_path):
 
     return storage_df
 
-#Uses matlplotlib to save image, pretty but very slow
+
+# Uses matlplotlib to save image, pretty but very slow
 def create_figure(RGB, scenescent, quinescent, save_path, img_name):
 
     # Plot Images
@@ -261,11 +272,14 @@ def write_csv(pandas_dataframe, directory):
         new_file.to_csv(directory, header=True, index=False)
     return
 
-def saveExcel(pandas_dataframe,directory):
+
+def saveExcel(pandas_dataframe, directory):
 
     if os.path.exists(directory):
         existing_excel = pd.read_excel(directory)
-        new_excel = pd.concat([existing_excel, pandas_dataframe], axis=0, ignore_index=True)
+        new_excel = pd.concat(
+            [existing_excel, pandas_dataframe], axis=0, ignore_index=True
+        )
         new_excel.to_excel(directory, index=False)
 
     else:

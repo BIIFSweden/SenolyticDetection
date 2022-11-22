@@ -42,7 +42,7 @@ senolysisprogram
 ```
 This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and set the maximum allowable area of the quiescent nuclei.
 
-The user has the option to choose how many images are analyzed in parallel. 
+The user has the option to choose how many images are analyzed in parallel.
 
 Then, press Run Analysis and monitor the script's progress in the command prompt/terminal.
 
@@ -53,4 +53,3 @@ Then, press Run Analysis and monitor the script's progress in the command prompt
 
 ## Results
 After the program has finished running, .png images with the segmentation results as well as .csv files with nuclei counts and areas will be saved in the corresponding directories containing the analyzed images.
-

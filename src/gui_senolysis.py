@@ -10,9 +10,9 @@ class GUI(tk.Tk):
 
         # Create Frame
         self.frame = tk.Frame()
-        self.frame.pack(fill='both',expand=1)
+        self.frame.pack(fill="both", expand=1)
         self.title("Senolysis Analysis")
-        
+
         # Get Directory Input Button
         directory_text = tk.StringVar()
         directory_text.set("Select directory containing image(s)")
@@ -25,9 +25,10 @@ class GUI(tk.Tk):
         )
         browse_btun.pack()
 
-       # Get Number of jobs
+        # Get Number of jobs
         self.num_jobs_label = tk.Label(
-            self.frame, text=f"Enter number of images to run in parallel (max: {os.cpu_count()})"
+            self.frame,
+            text=f"Enter number of images to run in parallel (max: {os.cpu_count()})",
         )
         self.num_jobs_label.pack()
         self.num_jobs_entry = tk.Entry(self.frame, textvariable=tk.StringVar())
@@ -55,4 +56,4 @@ class GUI(tk.Tk):
     # Save inputs and close GUI
     def quit(self):
         self.num_jobs = int(self.num_jobs_entry.get())
-        self.after(100, self.destroy()) 
+        self.after(100, self.destroy())

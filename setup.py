@@ -5,7 +5,12 @@ setup(
     name="Federico-Pietrocola2022-3",
     verion="0.1.1",
     description="Senolysis quantification using nuclei segmentation",
-    py_modules=["gui_senolysis", "senolysis_analysis", "senolysis_functions","senolysis_main"],
+    py_modules=[
+        "gui_senolysis",
+        "senolysis_analysis",
+        "senolysis_functions",
+        "senolysis_main",
+    ],
     package_dir={"": "src"},
     author_email="robert.welch@scilifelab.se",
     author="Robert Welch",
@@ -21,13 +26,11 @@ setup(
         "slicerator",
         "openpyxl",
         "tqdm_joblib",
-        "joblib"
-    
+        "joblib",
     ],
-
     entry_points={
-                     'console_scripts': [
-                     'senolysisprogram=senolysis_main:main',
-                                         ]
-                     },
-    )
+        "console_scripts": [
+            "senolysisprogram=senolysis_main:main",
+        ]
+    },
+)
