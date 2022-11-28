@@ -31,8 +31,8 @@ class GUI(tk.Tk):
             text=f"Enter the red-channel threshold (0-65,536) used for senescent classification",
         )
         self.red_threshhold_label.pack()
-        self.red_threshold_entry = tk.Entry(self.frame, textvariable=tk.StringVar())
-        self.red_threshold_entry.insert(tk.END, "100")
+        self.red_threshold_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=500))
+        self.red_threshold_entry.insert(tk.END,"")
         self.red_threshold_entry.pack()
 
         # Get Number of jobs
@@ -41,8 +41,8 @@ class GUI(tk.Tk):
             text=f"Enter number of images to run in parallel (max: {os.cpu_count()})",
         )
         self.num_jobs_label.pack()
-        self.num_jobs_entry = tk.Entry(self.frame, textvariable=tk.StringVar())
-        self.num_jobs_entry.insert(tk.END, "1")
+        self.num_jobs_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=1))
+        self.num_jobs_entry.insert(tk.END, "")
         self.num_jobs_entry.pack()
 
         # Run Analysis Button
@@ -66,6 +66,6 @@ class GUI(tk.Tk):
     # Save inputs and close GUI
     def quit(self):
         self.num_jobs = int(self.num_jobs_entry.get())
-        self.red_threshold = int(self.num_jobs_entry.get())
+        self.red_threshold = int(self.red_threshold_entry.get())
         self.after(100, self.destroy())
 

@@ -48,7 +48,7 @@ def senolysis_analysis(img_path, program_start_time,red_threshold):
         mask=nuclei_thresholded,
         red=red_downscaled,
         green=green_downscaled,
-        red_threshold=red_downscaled
+        red_threshold=red_threshold
     )
 
     # Upsample segmentation results back to orignal image size
