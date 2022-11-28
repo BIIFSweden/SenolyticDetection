@@ -289,21 +289,21 @@ def saveExcel(pandas_dataframe, directory):
 
     return
 
-def save_user_parameters(gui,program_start_time):
-    #Saves .csv file with user parameters to folder selected in GUI.
+# def save_user_parameters(gui,program_start_time):
+#     #Saves .csv file with user parameters to folder selected in GUI.
 
-    user_variables = [
-        ["Directory Chosen", gui.directory],
-        ["Red Threshold,", gui.red_threshold]
-    ]
+#     user_variables = [
+#         ["Directory Chosen", gui.directory],
+#         ["Red Threshold,", gui.red_threshold]
+#     ]
 
-    with open(
-        os.path.join(
-            os.path.normpath(gui.directory), f"Translocation_parameters_{program_start_time}.csv"
-        ),
-        "w",
-        newline="",
-    ) as csvfile:
-        my_writer = csv.writer(csvfile)
-        my_writer.writerows(user_variables)
-    return
+#     with open(
+#         os.path.join(
+#             os.path.normpath(gui.directory), f"Translocation_parameters_{program_start_time}.csv"
+#         ),
+#         "w",
+#         newline="",
+#     ) as csvfile:
+#         my_writer = csv.writer(csvfile)
+#         my_writer.writerows(user_variables)
+#     return
