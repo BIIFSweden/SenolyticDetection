@@ -5,7 +5,7 @@ from skimage.morphology import remove_small_objects
 from skimage.transform import resize
 
 
-def senolysis_analysis(img_path, program_start_time):
+def senolysis_analysis(img_path, program_start_time,red_threshold):
 
     red, green, blue = nd2_import(img_path)
 
@@ -48,6 +48,7 @@ def senolysis_analysis(img_path, program_start_time):
         mask=nuclei_thresholded,
         red=red_normalized,
         green=green_normalized,
+        red_threshold=red_threshold
     )
 
     # Upsample segmentation results back to orignal image size

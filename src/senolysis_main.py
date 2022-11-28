@@ -30,14 +30,14 @@ def main():
     if gui.num_jobs > 1:
         with tqdm_joblib(tqdm(desc="Progress", total=len(img_paths))) as progress_bar:
             Parallel(n_jobs=gui.num_jobs)(
-                delayed(senolysis_analysis)(img_path, program_start_time)
+                delayed(senolysis_analysis)(img_path, program_start_time,red_threshold=gui.red_threshold)
                 for img_path in img_paths
             )
 
     elif gui.num_jobs == 1:
         print(f"Number of jobs = 1, processing images in series.")
         [
-            senolysis_analysis(img_path, program_start_time)
+            senolysis_analysis(img_path, program_start_time,red_threshold=gui.red_threshold)
             for img_path in tqdm(img_paths)
         ]
 

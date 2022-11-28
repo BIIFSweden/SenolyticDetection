@@ -25,6 +25,16 @@ class GUI(tk.Tk):
         )
         browse_btun.pack()
 
+        # Set Red Channel Threshold for senescent classification
+        self.red_threshhold_label = tk.Label(
+            self.frame,
+            text=f"Enter the red-channel threshold [0-1] used for senescent classification",
+        )
+        self.red_threshhold_label.pack()
+        self.red_threshold_entry = tk.Entry(self.frame, textvariable=tk.StringVar())
+        self.red_threshold_entry.insert(tk.END, "0.3")
+        self.red_threshold_entry.pack()
+
         # Get Number of jobs
         self.num_jobs_label = tk.Label(
             self.frame,
@@ -56,4 +66,6 @@ class GUI(tk.Tk):
     # Save inputs and close GUI
     def quit(self):
         self.num_jobs = int(self.num_jobs_entry.get())
+        self.red_threshold = int(self.num_jobs_entry.get())
         self.after(100, self.destroy())
+
