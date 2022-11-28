@@ -46,9 +46,9 @@ def senolysis_analysis(img_path, program_start_time,red_threshold):
     # between different channels.
     scenescent_downscaled, quiescent_downscaled = classify_nuclei(
         mask=nuclei_thresholded,
-        red=red_normalized,
-        green=green_normalized,
-        red_threshold=red_threshold
+        red=red_downscaled,
+        green=green_downscaled,
+        red_threshold=red_downscaled
     )
 
     # Upsample segmentation results back to orignal image size

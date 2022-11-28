@@ -28,7 +28,7 @@ class GUI(tk.Tk):
         # Set Red Channel Threshold for senescent classification
         self.red_threshhold_label = tk.Label(
             self.frame,
-            text=f"Enter the red-channel threshold [0-1] used for senescent classification",
+            text=f"Enter the red-channel threshold (0-65,536) used for senescent classification",
         )
         self.red_threshhold_label.pack()
         self.red_threshold_entry = tk.Entry(self.frame, textvariable=tk.StringVar())
