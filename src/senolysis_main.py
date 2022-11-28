@@ -41,6 +41,9 @@ def main():
             for img_path in tqdm(img_paths)
         ]
 
+    #Record folder path chosen and red-threshold used
+    save_user_parameters(gui,program_start_time)
+
     print(f"Finished Analysis")
     return None
 

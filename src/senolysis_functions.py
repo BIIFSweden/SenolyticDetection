@@ -12,7 +12,7 @@ from skimage.filters import threshold_mean
 from skimage.exposure import rescale_intensity
 from skimage.morphology import binary_dilation, disk
 from skimage.segmentation import flood_fill
-
+import csv
 
 def find_images(folder_path):
     """Finds the paths of all .nd2 images within specified path. Normalizes
@@ -286,4 +286,23 @@ def saveExcel(pandas_dataframe, directory):
     else:
         pandas_dataframe.to_excel(directory, index=False)
 
+    return
+
+def save_user_parameters(gui,program_start_time):
+    #Saves .csv file with user parameters to folder selected in GUI.
+
+    user_variables = [
+        ["Directory Chosen", gui.directory],
+        ["Red Threshold,", gui.red_threshold]
+    ]
+
+    with open(
+        os.path.join(
+            os.path.normpath(gui.directory), f"Translocation_parameters_{program_start_time}.csv"
+        ),
+        "w",
+        newline="",
+    ) as csvfile:
+        my_writer = csv.writer(csvfile)
+        my_writer.writerows(user_variables)
     return
