@@ -32,7 +32,7 @@ class GUI(tk.Tk):
         )
         self.red_threshhold_label.pack()
         self.red_threshold_entry = tk.Entry(self.frame, textvariable=tk.StringVar())
-        self.red_threshold_entry.insert(tk.END, "0.3")
+        self.red_threshold_entry.insert(tk.END, "100")
         self.red_threshold_entry.pack()
 
         # Get Number of jobs
