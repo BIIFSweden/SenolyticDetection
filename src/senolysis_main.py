@@ -37,7 +37,7 @@ def main():
     elif gui.num_jobs == 1:
         print(f"Number of jobs = 1, processing images in series.")
         [
-            senolysis_analysis(img_path, program_start_time,red_threshold=gui.red_threshold)
+            senolysis_analysis(img_path, program_start_time,scenescent_threshold=gui.red_threshold)
             for img_path in tqdm(img_paths)
         ]
 

@@ -236,7 +236,7 @@ def analyze_nuclei(scenescent_mask, quiescent_mask, img_path):
 
 
 # Uses matlplotlib to save image, pretty but very slow
-def create_figure(RGB, scenescent, quinescent, save_path, img_name):
+def create_figure(RGB, scenescent, quinescent, save_path, img_name,scenescent_threshold):
 
     # Plot Images
     plt.figure(figsize=(5, 5))
@@ -249,9 +249,10 @@ def create_figure(RGB, scenescent, quinescent, save_path, img_name):
     custom_lines = [
         Line2D([0], [0], color=(1, 1, 1), lw=2),
         Line2D([0], [0], color=(0, 0, 1), lw=2),
+        Line2D([0], [0], color=(0, 0, 0), lw=0),
     ]
 
-    plt.legend(custom_lines, ["Senescent", "Quiescent"], prop={"size": 6})
+    plt.legend(custom_lines, ["Senescent", "Quiescent",f'Scenescent threshold: {scenescent_threshold}'], prop={"size": 6})
 
     plt.tight_layout()
     plt.savefig(os.path.join(save_path, img_name + ".png"), dpi=500)
