@@ -6,9 +6,9 @@
 
 
 
-This python script is used for high-throughput analysis of senescence and quiescence cells. Thresholding is used to segment the blue channel, which marks the nuclei of the cells.
+This python script is used for high-throughput analysis of senescence and quiescence cells. Otsu thresholding is used to segment the blue channel, which marks the nuclei of the cells.
 
-To classify the cells, the mean intensity of the red channel, green channel are caluclated for each nucleus. If the red channel intensity is greater than the green intensity, it is classified as senescent, else it is tagged as quiescent. Some additional size filtering is used to retain nuclei within a realistic area range.
+To classify the cells, the mean intensity of the red channel, green channel are caluclated for each nucleus. If the red channel intensity is greater than user-specified value, it is classified as senescent, else it is tagged as quiescent. Some additional size filtering is used to retain nuclei within a realistic area range.
 
 The script saves csv files with counts of the scenescent and quiescent nuclei and size statistics. In addition, it saves .png images displaying the segmentation results.
 
