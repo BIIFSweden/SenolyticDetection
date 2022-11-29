@@ -38,7 +38,7 @@ class GUI(tk.Tk):
         # Set Minumum Nuclei size 
         self.nuclei_min_label = tk.Label(
             self.frame,
-            text=f"Minimum Nuclei Area",
+            text=f"Minimum Nuclei Area (pixels)",
         )
         self.nuclei_min_label.pack()
         self.nuclei_min_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=100))
@@ -48,7 +48,7 @@ class GUI(tk.Tk):
         # Set Maximum Nuclei size 
         self.nuclei_max_label = tk.Label(
             self.frame,
-            text=f"Minimum Nuclei Area",
+            text=f"Minimum Nuclei Area (pixels)",
         )
         self.nuclei_max_label.pack()
         self.nuclei_max_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=10000))
