@@ -21,55 +21,85 @@ class GUI(tk.Tk):
             textvariable=directory_text,
             command=lambda: self.select_directory(),
             height=2,
-            width=50,
+            width=30,
         )
-        browse_btun.pack()
+        browse_btun.grid(row=0,column=1)
 
         # Set Red Channel Threshold for senescent classification
         self.red_threshhold_label = tk.Label(
             self.frame,
-            text=f"senescent threshold (0-65,536)",
+            text=f"Senescent threshold (0-65,536)",
         )
-        self.red_threshhold_label.pack()
+        self.red_threshhold_label.grid(row=1,column=0)
         self.red_threshold_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=300))
         self.red_threshold_entry.insert(tk.END,"")
-        self.red_threshold_entry.pack()
+        self.red_threshold_entry.grid(row=2,column=0)
 
         # Set Minumum Nuclei size 
         self.nuclei_min_label = tk.Label(
             self.frame,
             text=f"Minimum Nuclei Area (pixels)",
         )
-        self.nuclei_min_label.pack()
+        self.nuclei_min_label.grid(row=1,column=1)
         self.nuclei_min_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=100))
         self.nuclei_min_entry.insert(tk.END,"")
-        self.nuclei_min_entry.pack()
+        self.nuclei_min_entry.grid(row=2,column=1)
 
         # Set Maximum Nuclei size 
         self.nuclei_max_label = tk.Label(
             self.frame,
-            text=f"Minimum Nuclei Area (pixels)",
+            text=f"Maximum Nuclei Area (pixels)",
         )
-        self.nuclei_max_label.pack()
+        self.nuclei_max_label.grid(row=1,column=2)
         self.nuclei_max_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=10000))
         self.nuclei_max_entry.insert(tk.END,"")
-        self.nuclei_max_entry.pack()
+        self.nuclei_max_entry.grid(row=2,column=2)
 
-        # Remove Well-Ring option
-        self.remove_well_ring = tk.IntVar()
-        self.well_ring_checkbox = tk.Checkbutton(self.frame, text="Remove well slide outline from images", variable=self.remove_well_ring)
-        self.well_ring_checkbox.select()
-        self.well_ring_checkbox.pack()
+        #Set Channel Order
+        self.scenescent_channel_label = tk.Label(
+            self.frame,
+            text=f"Scenescent Channel #",
+        )
+        self.scenescent_channel_label.grid(row=3,column=0)
+        self.scenescent_channel_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=0))
+        self.scenescent_channel_entry.insert(tk.END, "")
+        self.scenescent_channel_entry.grid(row=4,column=0)
 
-        # Get Number of jobs
+        #Set Channel Order
+        self.quiescent_channel_label = tk.Label(
+            self.frame,
+            text=f"Quiescent Channel #",
+        )
+        self.quiescent_channel_label.grid(row=3,column=1)
+        self.quiescent_channel_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=1))
+        self.quiescent_channel_entry.insert(tk.END, "")
+        self.quiescent_channel_entry.grid(row=4,column=1)
+
+        #Set Channel Order
+        self.nuclei_chanel_label = tk.Label(
+            self.frame,
+            text=f"Nuclei Channel #",
+        )
+        self.nuclei_chanel_label.grid(row=3,column=2)
+        self.nuclei_chanel_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=2))
+        self.nuclei_chanel_entry.insert(tk.END, "")
+        self.nuclei_chanel_entry.grid(row=4,column=2)
+
+         # Get Number of jobs
         self.num_jobs_label = tk.Label(
             self.frame,
             text=f"Enter number of images to run in parallel (max: {os.cpu_count()})",
         )
-        self.num_jobs_label.pack()
+        self.num_jobs_label.grid(row=5,column=1)
         self.num_jobs_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=1))
         self.num_jobs_entry.insert(tk.END, "")
-        self.num_jobs_entry.pack()
+        self.num_jobs_entry.grid(row=6,column=1)
+
+         # Remove Well-Ring option
+        self.remove_well_ring = tk.IntVar()
+        self.well_ring_checkbox = tk.Checkbutton(self.frame, text="Remove well slide outline from images", variable=self.remove_well_ring)
+        self.well_ring_checkbox.select()
+        self.well_ring_checkbox.grid(row=7,column=1)
 
         # Run Analysis Button
         run_text = tk.StringVar()
@@ -81,7 +111,8 @@ class GUI(tk.Tk):
             height=2,
             width=10,
         )
-        run_btun.pack()
+        run_btun.grid(row=8,column=1)
+        
 
     # Choose Image Directory
     def select_directory(self):
@@ -96,4 +127,10 @@ class GUI(tk.Tk):
         self.remove_well_ring = int(self.remove_well_ring.get())
         self.min_nuclei_size =  int(self.nuclei_min_entry.get())
         self.max_nuclei_size =  int(self.nuclei_max_entry.get())
+        self.scenescent_channel = int(self.scenescent_channel_entry)
+        self.quiescent_channel = int(self.quiescent_channel_entry)
+        self.nuclei_chanel = int(self.nuclei_chanel_entry)
         self.after(100, self.destroy())
+
+gui = GUI()
+gui.mainloop()

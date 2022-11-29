@@ -54,46 +54,51 @@ def standardize_strings(names):
         raise ValueError("names should be a string or list of strings")
 
 
-def nd2_import(image_path):
+def nd2_import(image_path,gui):
 
-    # List of possible image names
-    hoechst_possbile_names = standardize_strings(
-        ["senolysis hoechst", "hoechst", "kinetix single hoechst"]
-    )
-    senolysis_possible_names = standardize_strings(
-        ["senolysis", " Kinetix Single band tdTomato", "tdTomato"]
-    )
-    EGFP_possible_namess = standardize_strings(
-        ["senolysis egfp", " Kinetix Single band senolysis  EGFP1", "egfp1", "egfp"]
-    )
+    # # List of possible image names
+    # hoechst_possbile_names = standardize_strings(
+    #     ["senolysis hoechst", "hoechst", "kinetix single hoechst"]
+    # )
+    # senolysis_possible_names = standardize_strings(
+    #     ["senolysis", " Kinetix Single band tdTomato", "tdTomato"]
+    # )
+    # EGFP_possible_namess = standardize_strings(
+    #     ["senolysis egfp", " Kinetix Single band senolysis  EGFP1", "egfp1", "egfp"]
+    # )
 
     with ND2Reader(image_path) as nd2_object:
 
-        # Get channel names
-        metadata = nd2_object.metadata
-        channels = standardize_strings(metadata["channels"])
+        red = nd2_object[gui.scenescent_channel]
+        green = nd2_object[gui.quiescent_channel]
+        blue = nd2_object[gui.nuclei_chanel]
 
-        # Return channels in correct order
-        for i, channel in enumerate(channels):
+        # # Get channel names
+        # metadata = nd2_object.metadata
+        # channels = standardize_strings(metadata["channels"])
 
-            if channel in hoechst_possbile_names:
-                ind_hoechst = i
-            elif channel.lower() in senolysis_possible_names:
-                ind_senolysis = i
-            elif channel.lower() in EGFP_possible_namess:
-                ind_EGFP = i
-            else:
-                ind_senolysis = 0
-                ind_EGFP = 1
-                ind_hoechst = 2
+        # # Return channels in correct order
+        # for i, channel in enumerate(channels):
 
-                warnings.warn(
-                    """Naming of .nd2 channels cannot be resolved. Assuming the
-                                    channel order is Senescent, Quiescent then Nuclei stain.
-                    """
-                )
+        #     if channel in hoechst_possbile_names:
+        #         ind_hoechst = i
+        #     elif channel.lower() in senolysis_possible_names:
+        #         ind_senolysis = i
+        #     elif channel.lower() in EGFP_possible_namess:
+        #         ind_EGFP = i
+        #     else:
+        #         ind_senolysis = 0
+        #         ind_EGFP = 1
+        #         ind_hoechst = 2
 
-        return nd2_object[ind_senolysis], nd2_object[ind_EGFP], nd2_object[ind_hoechst]
+        #         warnings.warn(
+        #             """Naming of .nd2 channels cannot be resolved. Assuming the
+        #                             channel order is Senescent, Quiescent then Nuclei stain.
+        #             """
+
+        #return nd2_object[ind_senolysis], nd2_object[ind_EGFP], nd2_object[ind_hoechst]
+
+    return red,green, blue
 
 
 def normalize_img(img, low_per=1, high_per=99):
