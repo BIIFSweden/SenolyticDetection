@@ -5,7 +5,7 @@ from skimage.morphology import remove_small_objects
 from skimage.transform import resize
 
 
-def senolysis_analysis(img_path, program_start_time,scenescent_threshold):
+def senolysis_analysis(img_path, program_start_time,gui):
 
     red, green, blue = nd2_import(img_path)
 
@@ -32,9 +32,11 @@ def senolysis_analysis(img_path, program_start_time,scenescent_threshold):
     blue_smoothed = gaussian(blue_normalized, 1)  # smooth image
 
     # remove the well ring from the blue channel
-    blue_no_well_ring = remove_well_rings(blue_smoothed)
-
-    nuclei_thresholded = threshold_with_otsu(blue_no_well_ring)
+    if gui.remove_well_ring == 1:
+        blue_no_well_ring = remove_well_rings(blue_smoothed)
+        nuclei_thresholded = threshold_with_otsu(blue_no_well_ring)
+    else:
+        nuclei_thresholded = threshold_with_otsu(blue_smoothed)
 
     # Segment nuclei in blue channel and small and large objects
     nuclei_thresholded = threshold_with_otsu(blue_no_well_ring)
@@ -48,7 +50,7 @@ def senolysis_analysis(img_path, program_start_time,scenescent_threshold):
         mask=nuclei_thresholded,
         red=red_downscaled,
         green=green_downscaled,
-        red_threshold=scenescent_threshold
+        red_threshold=gui.scenescent_threshold
     )
 
     # Upsample segmentation results back to orignal image size
@@ -72,7 +74,7 @@ def senolysis_analysis(img_path, program_start_time,scenescent_threshold):
 
     img_name = os.path.split(img_path)[-1]
     img_name = os.path.splitext(img_name)[0]
-    create_figure(RGB, scenescent_downscaled, quiescent_downscaled, save_path, img_name,scenescent_threshold)
+    create_figure(RGB, scenescent_downscaled, quiescent_downscaled, save_path, img_name,gui.scenescent_threshold)
 
     
 

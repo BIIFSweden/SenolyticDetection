@@ -35,6 +35,13 @@ class GUI(tk.Tk):
         self.red_threshold_entry.insert(tk.END,"")
         self.red_threshold_entry.pack()
 
+        # Remove Well-Ring option
+
+        self.remove_well_ring = tk.IntVar()
+        self.well_ring_checkbox = tk.Checkbutton(self.frame, text="Remove well slide outline from images", variable=self.remove_well_ring)
+        self.well_ring_checkbox.select()
+        self.well_ring_checkbox.pack()
+
         # Get Number of jobs
         self.num_jobs_label = tk.Label(
             self.frame,
@@ -67,5 +74,8 @@ class GUI(tk.Tk):
     def quit(self):
         self.num_jobs = int(self.num_jobs_entry.get())
         self.red_threshold = int(self.red_threshold_entry.get())
+        self.remove_well_ring = int(self.remove_well_ring.get())
         self.after(100, self.destroy())
+
+
 
