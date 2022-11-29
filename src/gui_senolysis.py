@@ -28,15 +28,34 @@ class GUI(tk.Tk):
         # Set Red Channel Threshold for senescent classification
         self.red_threshhold_label = tk.Label(
             self.frame,
-            text=f"Enter the red-channel threshold (0-65,536) used for senescent classification",
+            text=f"senescent threshold (0-65,536)",
         )
         self.red_threshhold_label.pack()
         self.red_threshold_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=500))
         self.red_threshold_entry.insert(tk.END,"")
         self.red_threshold_entry.pack()
 
-        # Remove Well-Ring option
+        # Set Minumum Nuclei size 
+        self.nuclei_min_label = tk.Label(
+            self.frame,
+            text=f"Minimum Nuclei Area",
+        )
+        self.nuclei_min_label.pack()
+        self.nuclei_min_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=100))
+        self.nuclei_min_entry.insert(tk.END,"")
+        self.nuclei_min_entry.pack()
 
+        # Set Maximum Nuclei size 
+        self.nuclei_max_label = tk.Label(
+            self.frame,
+            text=f"Minimum Nuclei Area",
+        )
+        self.nuclei_max_label.pack()
+        self.nuclei_max_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=10000))
+        self.nuclei_max_entry.insert(tk.END,"")
+        self.nuclei_max_entry.pack()
+
+        # Remove Well-Ring option
         self.remove_well_ring = tk.IntVar()
         self.well_ring_checkbox = tk.Checkbutton(self.frame, text="Remove well slide outline from images", variable=self.remove_well_ring)
         self.well_ring_checkbox.select()
@@ -75,7 +94,12 @@ class GUI(tk.Tk):
         self.num_jobs = int(self.num_jobs_entry.get())
         self.red_threshold = int(self.red_threshold_entry.get())
         self.remove_well_ring = int(self.remove_well_ring.get())
+        self.min_nuclei_size =  int(self.nuclei_min_entry.get())
+        self.max_nuclei_size =  int(self.nuclei_max_entry.get())
         self.after(100, self.destroy())
 
 
 
+
+gui = GUI()
+gui.mainloop()
