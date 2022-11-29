@@ -31,7 +31,7 @@ class GUI(tk.Tk):
             text=f"senescent threshold (0-65,536)",
         )
         self.red_threshhold_label.pack()
-        self.red_threshold_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=500))
+        self.red_threshold_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=300))
         self.red_threshold_entry.insert(tk.END,"")
         self.red_threshold_entry.pack()
 
@@ -92,14 +92,8 @@ class GUI(tk.Tk):
     # Save inputs and close GUI
     def quit(self):
         self.num_jobs = int(self.num_jobs_entry.get())
-        self.red_threshold = int(self.red_threshold_entry.get())
+        self.scenescent_threshold = int(self.red_threshold_entry.get())
         self.remove_well_ring = int(self.remove_well_ring.get())
         self.min_nuclei_size =  int(self.nuclei_min_entry.get())
         self.max_nuclei_size =  int(self.nuclei_max_entry.get())
         self.after(100, self.destroy())
-
-
-
-
-gui = GUI()
-gui.mainloop()
