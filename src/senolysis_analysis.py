@@ -7,7 +7,7 @@ from skimage.transform import resize
 
 def senolysis_analysis(img_path, program_start_time,gui):
 
-    red, green, blue = nd2_import(img_path)
+    red, green, blue = nd2_import(img_path,gui)
 
     # downscale the images for faster computation
     downscale_factor = 4
@@ -33,7 +33,7 @@ def senolysis_analysis(img_path, program_start_time,gui):
 
     # remove the well ring from the blue channel
     if gui.remove_well_ring == 1:
-        blue_no_well_ring = remove_well_rings(blue_smoothed)
+        blue_no_well_ring = remove_well_rings(blue_smoothed,max_size=gui.max_nuclei_size)
         nuclei_thresholded = threshold_with_otsu(blue_no_well_ring)
     else:
         nuclei_thresholded = threshold_with_otsu(blue_smoothed)
