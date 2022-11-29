@@ -131,6 +131,3 @@ class GUI(tk.Tk):
         self.quiescent_channel = int(self.quiescent_channel_entry)
         self.nuclei_chanel = int(self.nuclei_chanel_entry)
         self.after(100, self.destroy())
-
-gui = GUI()
-gui.mainloop()
