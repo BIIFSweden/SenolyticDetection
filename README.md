@@ -48,6 +48,8 @@ The channel order can be modified if required, by default it is (senescent, quie
 
 The user also has the option to choose how many images are analyzed in parallel.
 
+Finally, the checkbox for "Remove well outlines from images" can be unchecked if outlines of the well are not visible in the images. Otherwise, this should remain as checked.
+
 Then, press Run Analysis and monitor the script's progress in the command prompt/terminal.
 
 <p align="center">
