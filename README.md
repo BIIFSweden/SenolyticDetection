@@ -40,15 +40,20 @@ pip install -e .
 conda activate senolysisenv
 senolysisprogram
 ```
-This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and set the maximum allowable area of the quiescent nuclei.
+This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and set the minium and maximum allowable areas of the nuclei. Nuclei outside of this range will not be counted.
 
-The user has the option to choose how many images are analyzed in parallel.
+The most important parameter to tune is the Senescent threshold. Nuclei with a mean intensity in the senescent channel (red) above this threshold will be classified and senescent, otherwise quiescent.
+
+The channel order can be modified if required, by default it is (senescent, quiescent, nuclei).
+
+The user also has the option to choose how many images are analyzed in parallel.
 
 Then, press Run Analysis and monitor the script's progress in the command prompt/terminal.
 
 <p align="center">
-<img width="481" alt="Screenshot 2022-06-16 at 14 36 12" src="https://user-images.githubusercontent.com/43760657/174070999-0789315e-a3d7-4904-b365-944b0b6d8d85.png">
+<img width="693" alt="Screenshot 2022-11-30 at 09 28 48" src="https://user-images.githubusercontent.com/43760657/204745692-05520285-dba8-455c-9ac1-dda18f5bf8c7.png">
 </p>
+
 
 
 ## Results
