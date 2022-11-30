@@ -12,14 +12,16 @@ from gui_senolysis import *
 def main():
 
     gui = GUI()
-    gui.mainloop()    
-    assert gui.max_nuclei_size > gui.min_nuclei_size, 'Maximum nuclei area must be larger than minimum nuclei area'
+    gui.mainloop()
+    assert (
+        gui.max_nuclei_size > gui.min_nuclei_size
+    ), "Maximum nuclei area must be larger than minimum nuclei area"
 
-    print(f'Scenescent Threshold: {gui.scenescent_threshold}')
-    remove_well = 'True' if gui.remove_well_ring == 1 else 'False'
-    print(f'Remove Well Ring: {remove_well}')
-    print(f'Max Nuclei: {gui.max_nuclei_size}')
-    print(f'Min Nuclei: {gui.min_nuclei_size}')
+    print(f"Scenescent Threshold: {gui.scenescent_threshold}")
+    remove_well = "True" if gui.remove_well_ring == 1 else "False"
+    print(f"Remove Well Ring: {remove_well}")
+    print(f"Max Nuclei: {gui.max_nuclei_size}")
+    print(f"Min Nuclei: {gui.min_nuclei_size}")
 
     program_start_time = strftime("%Y-%m-%d %H-%M-%S", localtime())
 
@@ -37,14 +39,14 @@ def main():
     if gui.num_jobs > 1:
         with tqdm_joblib(tqdm(desc="Progress", total=len(img_paths))) as progress_bar:
             Parallel(n_jobs=gui.num_jobs)(
-                delayed(senolysis_analysis)(img_path, program_start_time,gui)
+                delayed(senolysis_analysis)(img_path, program_start_time, gui)
                 for img_path in img_paths
             )
 
     elif gui.num_jobs == 1:
         print(f"Number of jobs = 1, processing images in series.")
         [
-            senolysis_analysis(img_path, program_start_time,gui)
+            senolysis_analysis(img_path, program_start_time, gui)
             for img_path in tqdm(img_paths)
         ]
 

@@ -1,13 +1,13 @@
 from skimage.transform import downscale_local_mean
 from skimage.filters import gaussian
 from senolysis_functions import *
-from skimage.morphology import remove_small_objects,remove_small_holes
+from skimage.morphology import remove_small_objects, remove_small_holes
 from skimage.transform import resize
 
 
-def senolysis_analysis(img_path, program_start_time,gui):
+def senolysis_analysis(img_path, program_start_time, gui):
 
-    red, green, blue = nd2_import(img_path,gui)
+    red, green, blue = nd2_import(img_path, gui)
 
     # downscale the images for faster computation
     downscale_factor = 4
@@ -33,28 +33,33 @@ def senolysis_analysis(img_path, program_start_time,gui):
 
     # remove the well ring from the blue channel
     if gui.remove_well_ring == 1:
-        blue_no_well_ring = remove_well_rings(blue_smoothed,max_size=gui.max_nuclei_size)
+        blue_no_well_ring = remove_well_rings(
+            blue_smoothed, max_size=gui.max_nuclei_size
+        )
         nuclei_thresholded = threshold_with_otsu(blue_no_well_ring)
     else:
         nuclei_thresholded = threshold_with_otsu(blue_smoothed)
 
     # Segment nuclei in blue channel and small and large objects
     nuclei_thresholded = threshold_with_otsu(blue_no_well_ring)
-    nuclei_thresholded = remove_small_holes(nuclei_thresholded,area_threshold=100)
+    nuclei_thresholded = remove_small_holes(nuclei_thresholded, area_threshold=100)
 
-    #Size filter threshold nuclei
-    min_nuclei_area = int(gui.min_nuclei_size/downscale_factor**2)
-    max_nuclei_area = int(gui.max_nuclei_size/downscale_factor**2)
-    nuclei_thresholded = remove_small_objects(nuclei_thresholded, min_size=min_nuclei_area)
-    nuclei_thresholded = remove_large_nuclei(nuclei_thresholded, max_size=max_nuclei_area)
-    
+    # Size filter threshold nuclei
+    min_nuclei_area = int(gui.min_nuclei_size / downscale_factor**2)
+    max_nuclei_area = int(gui.max_nuclei_size / downscale_factor**2)
+    nuclei_thresholded = remove_small_objects(
+        nuclei_thresholded, min_size=min_nuclei_area
+    )
+    nuclei_thresholded = remove_large_nuclei(
+        nuclei_thresholded, max_size=max_nuclei_area
+    )
 
     # Determine if each nuclei belongs to scenescent or quiescent cell
     scenescent_downscaled, quiescent_downscaled = classify_nuclei(
         mask=nuclei_thresholded,
         red=red_downscaled,
         green=green_downscaled,
-        red_threshold=gui.scenescent_threshold
+        red_threshold=gui.scenescent_threshold,
     )
 
     # Upsample segmentation results back to orignal image size
@@ -78,6 +83,13 @@ def senolysis_analysis(img_path, program_start_time,gui):
 
     img_name = os.path.split(img_path)[-1]
     img_name = os.path.splitext(img_name)[0]
-    create_figure(RGB, scenescent_downscaled, quiescent_downscaled, save_path, img_name,gui.scenescent_threshold)
+    create_figure(
+        RGB,
+        scenescent_downscaled,
+        quiescent_downscaled,
+        save_path,
+        img_name,
+        gui.scenescent_threshold,
+    )
 
     return

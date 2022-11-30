@@ -14,6 +14,7 @@ from skimage.morphology import binary_dilation, disk
 from skimage.segmentation import flood_fill
 import csv
 
+
 def find_images(folder_path):
     """Finds the paths of all .nd2 images within specified path. Normalizes
     image paths to work on any OS.
@@ -54,7 +55,7 @@ def standardize_strings(names):
         raise ValueError("names should be a string or list of strings")
 
 
-def nd2_import(image_path,gui):
+def nd2_import(image_path, gui):
 
     # # List of possible image names
     # hoechst_possbile_names = standardize_strings(
@@ -96,9 +97,9 @@ def nd2_import(image_path,gui):
         #                             channel order is Senescent, Quiescent then Nuclei stain.
         #             """
 
-        #return nd2_object[ind_senolysis], nd2_object[ind_EGFP], nd2_object[ind_hoechst]
+        # return nd2_object[ind_senolysis], nd2_object[ind_EGFP], nd2_object[ind_hoechst]
 
-    return red,green, blue
+    return red, green, blue
 
 
 def normalize_img(img, low_per=1, high_per=99):
@@ -164,7 +165,7 @@ def threshold_with_otsu(img):
     return thresholded
 
 
-def classify_nuclei(mask, red, green,red_threshold):
+def classify_nuclei(mask, red, green, red_threshold):
 
     nuclei_regions = regionprops(label(mask))
 
@@ -175,7 +176,7 @@ def classify_nuclei(mask, red, green,red_threshold):
         red_value = np.mean(red[tuple(nuclei_coordinates.T)])
         green_value = np.mean(green[tuple(nuclei_coordinates.T)])
 
-        #if red_value > green_value:
+        # if red_value > green_value:
         if red_value >= red_threshold:
             scenescent[tuple(nuclei_coordinates.T)] = 1
         else:
@@ -241,7 +242,9 @@ def analyze_nuclei(scenescent_mask, quiescent_mask, img_path):
 
 
 # Uses matlplotlib to save image, pretty but very slow
-def create_figure(RGB, scenescent, quinescent, save_path, img_name,scenescent_threshold):
+def create_figure(
+    RGB, scenescent, quinescent, save_path, img_name, scenescent_threshold
+):
 
     # Plot Images
     plt.figure(figsize=(5, 5))
@@ -257,7 +260,11 @@ def create_figure(RGB, scenescent, quinescent, save_path, img_name,scenescent_th
         Line2D([0], [0], color=(0, 0, 0), lw=0),
     ]
 
-    plt.legend(custom_lines, ["Senescent", "Quiescent",f'Scenescent threshold: {scenescent_threshold}'], prop={"size": 6})
+    plt.legend(
+        custom_lines,
+        ["Senescent", "Quiescent", f"Scenescent threshold: {scenescent_threshold}"],
+        prop={"size": 6},
+    )
 
     plt.tight_layout()
     plt.savefig(os.path.join(save_path, img_name + ".png"), dpi=500)
@@ -293,6 +300,7 @@ def saveExcel(pandas_dataframe, directory):
         pandas_dataframe.to_excel(directory, index=False)
 
     return
+
 
 # def save_user_parameters(gui,program_start_time):
 #     #Saves .csv file with user parameters to folder selected in GUI.
