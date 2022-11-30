@@ -49,10 +49,6 @@ def senolysis_analysis(img_path, program_start_time,gui):
     nuclei_thresholded = remove_large_nuclei(nuclei_thresholded, max_size=max_nuclei_area)
     
 
-    #Upscale nulei threshold to original dimensions
-    #nuclei_thresholded_upscaled = resize(nuclei_thresholded, output_shape=blue.shape) 
-
-
     # Determine if each nuclei belongs to scenescent or quiescent cell
     scenescent_downscaled, quiescent_downscaled = classify_nuclei(
         mask=nuclei_thresholded,
