@@ -42,7 +42,7 @@ senolysisprogram
 ```
 This will open a small GUI prompting you to select the directory containing the images to analyze. Select the directory and set the minium and maximum allowable areas of the nuclei. Nuclei outside of this range will not be counted.
 
-The most important parameter to tune is the Senescent threshold. Nuclei with a mean intensity in the senescent channel (red) above this threshold will be classified and senescent, otherwise quiescent.
+The most important parameter to tune is the Senescent threshold. Nuclei with a mean intensity in the senescent channel above this threshold will be classified as senescent, otherwise quiescent.
 
 The channel order can be modified if required, by default it is (senescent, quiescent, nuclei).
 
