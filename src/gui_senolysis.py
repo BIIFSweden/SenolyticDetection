@@ -62,7 +62,7 @@ class GUI(tk.Tk):
         # Set Channel Order
         self.scenescent_channel_label = tk.Label(
             self.frame,
-            text=f"Scenescent Channel #",
+            text=f"Senescent Channel #",
         )
         self.scenescent_channel_label.grid(row=3, column=0)
         self.scenescent_channel_entry = tk.Entry(
