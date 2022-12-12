@@ -37,27 +37,24 @@ class GUI(tk.Tk):
         self.red_threshold_entry.insert(tk.END, "")
         self.red_threshold_entry.grid(row=2, column=0)
 
-        # Set Minumum Nuclei size
-        self.nuclei_min_label = tk.Label(
+        # Manual Nuclei Threshold
+        self.nuclei_threshold_label = tk.Label(
             self.frame,
-            text=f"Minimum Nuclei Area (pixels)",
+            text=f"Global Nuclei Threshold (0-65,535)",
         )
-        self.nuclei_min_label.grid(row=1, column=1)
-        self.nuclei_min_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=100))
-        self.nuclei_min_entry.insert(tk.END, "")
-        self.nuclei_min_entry.grid(row=2, column=1)
+        self.nuclei_threshold_label.grid(row=1, column=1)
+        self.nuclei_threshold_entry = tk.Entry(self.frame, textvariable=tk.StringVar(value='Otsu'))
+        self.nuclei_threshold_entry.grid(row=2, column=1)
 
-        # Set Maximum Nuclei size
-        self.nuclei_max_label = tk.Label(
+         # Get Number of jobs
+        self.num_jobs_label = tk.Label(
             self.frame,
-            text=f"Maximum Nuclei Area (pixels)",
+            text=f"Enter number of images to run in parallel (max: {os.cpu_count()})",
         )
-        self.nuclei_max_label.grid(row=1, column=2)
-        self.nuclei_max_entry = tk.Entry(
-            self.frame, textvariable=tk.IntVar(value=10000)
-        )
-        self.nuclei_max_entry.insert(tk.END, "")
-        self.nuclei_max_entry.grid(row=2, column=2)
+        self.num_jobs_label.grid(row=1, column=2)
+        self.num_jobs_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=1))
+        self.num_jobs_entry.insert(tk.END, "")
+        self.num_jobs_entry.grid(row=2, column=2)
 
         # Set Channel Order
         self.scenescent_channel_label = tk.Label(
@@ -93,24 +90,27 @@ class GUI(tk.Tk):
         self.nuclei_chanel_entry.insert(tk.END, "")
         self.nuclei_chanel_entry.grid(row=4, column=2)
 
-        # Get Number of jobs
-        self.num_jobs_label = tk.Label(
+         # Set Minumum Nuclei size
+        self.nuclei_min_label = tk.Label(
             self.frame,
-            text=f"Enter number of images to run in parallel (max: {os.cpu_count()})",
+            text=f"Minimum Nuclei Area (pixels)",
         )
-        self.num_jobs_label.grid(row=5, column=1)
-        self.num_jobs_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=1))
-        self.num_jobs_entry.insert(tk.END, "")
-        self.num_jobs_entry.grid(row=6, column=1)
+        self.nuclei_min_label.grid(row=5, column=1)
+        self.nuclei_min_entry = tk.Entry(self.frame, textvariable=tk.IntVar(value=100))
+        self.nuclei_min_entry.insert(tk.END, "")
+        self.nuclei_min_entry.grid(row=6, column=1)
 
-        # Manual Nuclei Threshold
-        self.nuclei_threshold_label = tk.Label(
+        # Set Maximum Nuclei size
+        self.nuclei_max_label = tk.Label(
             self.frame,
-            text=f"Global Nuclei Threshold (0-65,535)",
+            text=f"Maximum Nuclei Area (pixels)",
         )
-        self.nuclei_threshold_label.grid(row=5, column=2)
-        self.nuclei_threshold_entry = tk.Entry(self.frame, textvariable=tk.StringVar(value='Otsu'))
-        self.nuclei_threshold_entry.grid(row=6, column=2)
+        self.nuclei_max_label.grid(row=5, column=2)
+        self.nuclei_max_entry = tk.Entry(
+            self.frame, textvariable=tk.IntVar(value=10000)
+        )
+        self.nuclei_max_entry.insert(tk.END, "")
+        self.nuclei_max_entry.grid(row=6, column=2)
 
         # Remove Well-Ring option
         self.remove_well_ring = tk.IntVar()
