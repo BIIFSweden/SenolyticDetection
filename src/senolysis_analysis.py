@@ -3,6 +3,7 @@ from skimage.filters import gaussian
 from senolysis_functions import *
 from skimage.morphology import remove_small_objects, remove_small_holes
 from skimage.transform import resize
+from skimage import io
 
 
 def senolysis_analysis(img_path, program_start_time, gui):
@@ -29,19 +30,21 @@ def senolysis_analysis(img_path, program_start_time, gui):
     )
 
     # Smooth the blue channel for nuclei segmentation
-    blue_smoothed = gaussian(blue_normalized, 1)  # smooth image
+    blue_smoothed = gaussian(blue_downscaled, 1,preserve_range = True)  # smooth image
 
     # remove the well ring from the blue channel
     if gui.remove_well_ring == 1:
-        blue_no_well_ring = remove_well_rings(
+        blue_smoothed = remove_well_rings(
             blue_smoothed, max_size=gui.max_nuclei_size
         )
-        nuclei_thresholded = threshold_with_otsu(blue_no_well_ring)
-    else:
-        nuclei_thresholded = threshold_with_otsu(blue_smoothed)
 
-    # Segment nuclei in blue channel and small and large objects
-    nuclei_thresholded = threshold_with_otsu(blue_no_well_ring)
+    if gui.thresholding_method == 'Otsu':
+        nuclei_thresholded = threshold_with_otsu(blue_smoothed)
+    elif gui.thresholding_method == 'Global':
+        nuclei_thresholded = blue_smoothed >= gui.nuclei_threshold
+    else: 
+        raise ValueError('Could not identify nuclei thresholding method')
+
     nuclei_thresholded = remove_small_holes(nuclei_thresholded, area_threshold=100)
 
     # Size filter threshold nuclei
@@ -79,10 +82,13 @@ def senolysis_analysis(img_path, program_start_time, gui):
 
     saveExcel(results_dataframe, os.path.join(save_path, "Senolysis_measures.xlsx"))
 
-    RGB = np.dstack([red_normalized, green_normalized, blue_normalized])
+    #Save Image with no DAPI Channel
+    zeros = np.zeros(blue_normalized.shape)
+    RGB = np.dstack([red_normalized, green_normalized, zeros])
 
     img_name = os.path.split(img_path)[-1]
     img_name = os.path.splitext(img_name)[0]
+
     create_figure(
         RGB,
         scenescent_downscaled,
@@ -91,5 +97,12 @@ def senolysis_analysis(img_path, program_start_time, gui):
         img_name,
         gui.scenescent_threshold,
     )
+
+    #Save Binary Mask as well
+    scenescent_mask_path = os.path.join(save_path,img_name+'_scenescent_mask.png')
+    quiescent_mask_path = os.path.join(save_path,img_name+'_quiescent_mask.png')
+
+    io.imsave(scenescent_mask_path,np.uint8(scenescent_upscaled*255),check_contrast=False)
+    io.imsave(quiescent_mask_path,np.uint8(quiescent_upscaled*255),check_contrast=False)
 
     return

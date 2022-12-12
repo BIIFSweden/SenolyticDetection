@@ -28,7 +28,7 @@ class GUI(tk.Tk):
         # Set Red Channel Threshold for senescent classification
         self.red_threshhold_label = tk.Label(
             self.frame,
-            text=f"Senescent threshold (0-65,536)",
+            text=f"Senescent threshold (0-65,535)",
         )
         self.red_threshhold_label.grid(row=1, column=0)
         self.red_threshold_entry = tk.Entry(
@@ -103,6 +103,15 @@ class GUI(tk.Tk):
         self.num_jobs_entry.insert(tk.END, "")
         self.num_jobs_entry.grid(row=6, column=1)
 
+        # Manual Nuclei Threshold
+        self.nuclei_threshold_label = tk.Label(
+            self.frame,
+            text=f"Global Nuclei Threshold (0-65,535)",
+        )
+        self.nuclei_threshold_label.grid(row=5, column=2)
+        self.nuclei_threshold_entry = tk.Entry(self.frame, textvariable=tk.StringVar(value='Otsu'))
+        self.nuclei_threshold_entry.grid(row=6, column=2)
+
         # Remove Well-Ring option
         self.remove_well_ring = tk.IntVar()
         self.well_ring_checkbox = tk.Checkbutton(
@@ -141,4 +150,16 @@ class GUI(tk.Tk):
         self.scenescent_channel = int(self.scenescent_channel_entry.get())
         self.quiescent_channel = int(self.quiescent_channel_entry.get())
         self.nuclei_chanel = int(self.nuclei_chanel_entry.get())
+
+        #get the nuclei threshold as Otsu or global threshold value for uint16
+        if self.nuclei_threshold_entry.get().lower() == 'otsu':
+            self.nuclei_threshold = str(self.nuclei_threshold_entry.get())
+            self.thresholding_method = 'Otsu'
+        else:
+            try:
+                self.nuclei_threshold = float(self.nuclei_threshold_entry.get())
+                self.thresholding_method = 'Global'
+            except:
+                raise ValueError(f'You entered {self.nuclei_threshold_entry.get()} for the nuclei threshold. This is not a valid nuclei threshold. The value should be Otsu for automatic segmentation of nuclei or a manual global threshold (0-65535)')
+
         self.after(100, self.destroy())
