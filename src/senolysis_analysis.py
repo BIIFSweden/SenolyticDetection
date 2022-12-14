@@ -22,27 +22,27 @@ def senolysis_analysis(img_path, program_start_time, gui):
         red, factors=(downscale_factor, downscale_factor)
     )
 
-    # normalize to [0,1] for 0 to 98th percentiles
+    #rescale to 0 - 98th percentiles 
     red_normalized, green_normalized, blue_normalized = (
         normalize_img(red_downscaled, high_per=98),
         normalize_img(green_downscaled, high_per=98),
         normalize_img(blue_downscaled, high_per=98),
     )   
 
-    # Threshold Nuclei
-    if gui.thresholding_method == 'Otsu':
+    blue_smoothed = gaussian(blue_downscaled, 1,preserve_range = True)
 
-        blue_smoothed = gaussian(blue_normalized, 1,preserve_range = True)
-        #First remove well ring
-        if gui.remove_well_ring == 1:
+    if gui.remove_well_ring == 1:
             blue_smoothed = remove_well_rings(
                 blue_normalized, max_size=gui.max_nuclei_size
             )
-        #Threshold with well ring removed
+        
+    # Threshold Nuclei
+    if gui.thresholding_method == 'Otsu':
+        
         nuclei_thresholded = threshold_with_otsu(blue_smoothed)
 
     elif gui.thresholding_method == 'Global':
-        blue_smoothed = gaussian(blue_downscaled, 1,preserve_range = True)
+
         nuclei_thresholded = blue_smoothed >= gui.nuclei_threshold
     else: 
         raise ValueError('Could not identify nuclei thresholding method')
