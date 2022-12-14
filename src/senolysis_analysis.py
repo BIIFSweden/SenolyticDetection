@@ -33,7 +33,7 @@ def senolysis_analysis(img_path, program_start_time, gui):
 
     if gui.remove_well_ring == 1:
             blue_smoothed = remove_well_rings(
-                blue_normalized, max_size=gui.max_nuclei_size
+                blue_smoothed, max_size=gui.max_nuclei_size
             )
         
     # Threshold Nuclei
