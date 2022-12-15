@@ -54,10 +54,10 @@ Finally, the checkbox for "Remove well outlines from images" can be unchecked if
 
 Then, press Run Analysis and monitor the script's progress in the command prompt/terminal.
 
-<p align="center">
-<img width="693" alt="Screenshot 2022-11-30 at 09 28 48" src="https://user-images.githubusercontent.com/43760657/204745692-05520285-dba8-455c-9ac1-dda18f5bf8c7.png">
-</p>
 
+<p align="center">
+<img width="808" alt="Screenshot 2022-12-15 at 14 53 41" src="https://user-images.githubusercontent.com/43760657/207876332-bd9b96f7-fded-4179-accb-d72484b076c5.png">
+</p>
 
 
 ## Results
