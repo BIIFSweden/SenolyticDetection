@@ -44,6 +44,8 @@ This will open a small GUI prompting you to select the directory containing the 
 
 The most important parameter to tune is the Senescent threshold. Nuclei with a mean intensity in the senescent channel above this threshold will be classified as senescent, otherwise quiescent.
 
+The default method to segment the Nuclei is using Otsu thresholding. Additionaly, an integer value in the uint16 range can be provided as a global threshold ie. nuclei with a signal intensity greater than this will be segmented.
+
 The channel order can be modified if required, by default it is (senescent, quiescent, nuclei).
 
 The user also has the option to choose how many images are analyzed in parallel.
