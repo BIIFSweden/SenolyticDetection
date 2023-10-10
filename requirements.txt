@@ -1,7 +1,6 @@
 certifi==2022.5.18.1
 cycler==0.11.0
 et-xmlfile==1.1.0
-Federico-Pietrocola2022-3==0.0.0
 fonttools==4.33.3
 imageio==2.19.3
 joblib==1.1.0
