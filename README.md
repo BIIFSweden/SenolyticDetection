@@ -26,8 +26,8 @@ cd path/to/store/program
 
 3. Download the github repository into this directory, change into the Federico-Pietrocola2022-3 directory and setup the environment:
 ```bash
-git clone https://github.com/BIIFSweden/Federico-Pietrocola2022-3.git
-cd Federico-Pietrocola2022-3
+git clone https://github.com/BIIFSweden/SenolyticDetection.git
+cd SenolyticDetection
 pip install -e .
 ```
 
