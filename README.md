@@ -1,10 +1,8 @@
-# Federico-Pietrocola2022-3
+# Senolytic Detection
 
 <p align="center">
 <img width="700" alt="Screenshot 2022-11-22 at 12 14 22" src="https://user-images.githubusercontent.com/43760657/203300414-90941d88-ce7f-4729-a97e-73b2bc896896.png">
 </p>
-
-
 
 This python script is used for high-throughput analysis of 3-channel .nd2 fluorescent images. Otsu thresholding is used to segment the blue channel, which marks the nuclei of the cells.
 
