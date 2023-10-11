@@ -6,9 +6,9 @@
 
 This python script is used for high-throughput analysis of 3-channel .nd2 fluorescent images. Otsu thresholding is used to segment the blue channel, which marks the nuclei of the cells.
 
-To classify the cells, the mean intensity of the nucleus in the scenescent channel is calculated. If it is higher than the user-specified scenescent threshold, the cell is classified as scenescent. Some additional user-specified size filtering is used to retain nuclei within an area range.
+To classify the cells, the mean intensity of the nucleus in the senescent channel is calculated. If it is higher than the user-specified senescent threshold, the cell is classified as senescent. Some additional user-specified size filtering is used to retain nuclei within an area range.
 
-The script saves csv files with counts of the scenescent and quiescent nuclei and size statistics. In addition, it saves .png images displaying the segmentation results.
+The script saves csv files with counts of the senescent and quiescent nuclei and size statistics. In addition, it saves .png images displaying the segmentation results.
 
 ## Installation
 
